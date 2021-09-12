@@ -8,20 +8,18 @@ module dtrigger(
 
     // async reset:
     always @ (posedge clk or negedge rst) begin
-        if (rst == 1'b1)
+        if (rst == 1'b0)
             q <= 0;
         else
             q <= d;
-    end
+	 end
 
     // sync reset:
-    /*
-    always @ (posedge clk) begin
-        if (rst == 1'b1)
-            q <= 0;
-        else
-            q <= d;
-    end
-    */
+//    always @ (posedge clk) begin
+//        if (rst == 1'b0)
+//            q <= 0;
+//        else
+//            q <= d;
+//	   end
 
-endmodule;
+endmodule
