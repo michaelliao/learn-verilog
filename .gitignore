@@ -1,3 +1,9 @@
+# hidden files:
+
+.*
+
+!.gitignore
+
 # Prerequisites
 *.d
 
