@@ -1,5 +1,5 @@
 
-module dtrigger(
+module dff(
     input d,
     input clk,
     input rst,
