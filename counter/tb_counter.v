@@ -9,10 +9,14 @@ module tb_counter ();
     initial begin
         clk = 1'b1;
         rst = 1'b0;
-        #20
+        #100
         rst = 1'b1;
-        #1000
-        $stop;
+		  #100
+		  rst = 1'b0;
+        #100
+        rst = 1'b1;
+        #10000
+        $finish();
     end
 
     always #10 clk = ~clk;
