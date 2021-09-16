@@ -55,6 +55,7 @@
 *.qsf
 *.bak
 *.qws
+*.rpt
 db
 incremental_db
 output_files
