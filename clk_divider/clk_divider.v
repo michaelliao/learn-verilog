@@ -1,7 +1,7 @@
 
 module clk_divider (
     input clk,
-	 input rst,
+    input rst,
     output clk2,
     output clk4,
     output clk8
@@ -11,8 +11,8 @@ module clk_divider (
 
     always @ (posedge clk) begin
         if (rst == 1'b1)
-		      cnt <= 4'b0;
-		  else
+            cnt <= 4'b0;
+        else
             cnt <= cnt + 1'b1;
     end
 
