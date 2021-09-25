@@ -1,84 +1,93 @@
 // display words
 
-//     parameter C = 8'b01100011,
-//     parameter E = 8'b01100001,
-//     parameter F = 8'b01110001,
-//     parameter H = 8'b10010001,
-//     parameter L = 8'b11100011,
-//     parameter O = 8'b00000011,
-//     parameter P = 8'b00110001,
-//     parameter U = 8'b10000011,
-//     parameter NONE = 8'b11111111
+
 
 module words
 (
     input clk,
     input rst,
-    //input [7:0] seg,
-    //input [5:0] sel,
-    output reg shcp,
-    output reg stcp,
-    output reg ds,
+    output shcp,
+    output stcp,
+    output ds,
     output oe
 );
+    parameter C = 8'b01100011;
+    parameter E = 8'b01100001;
+    parameter F = 8'b01110001;
+    parameter H = 8'b10010001;
+    parameter L = 8'b11100011;
+    parameter O = 8'b00000011;
+    parameter P = 8'b00110001;
+    parameter U = 8'b10000011;
+    parameter X = 8'b11111111;
 
-	 reg [1:0] cnt;
-	 reg [3:0] cnt_bit;
-    wire [15:0] data;
-     
-    wire [7:0] seg;
-    wire [5:0] sel;
+    reg [47:0] data;
 
-    assign seg = 8'b01100001; // E = 8'b01100001
-    assign sel = 6'b101001; // E_E__E
+    reg [15:0] cnt16; // 0 ~ 65535
 
-    assign data = {seg[7:0], sel[5:0]};
+    reg [25:0] cnt26; // 0 ~ 67108863
 
+    reg [7:0] seg;
+    reg [5:0] sel;
 
     always @ (posedge clk) begin
         if (rst == 1'b0)
             begin
-                cnt <= 2'b0;
-                cnt_bit <= 4'b0;
-                ds <= 1'b0;
-                shcp <= 1'b0;
-                stcp <= 1'b0;
-               end
+                cnt16 <= 16'b0;
+                cnt26 <= 26'b0;
+                sel <= 6'b000_001;
+            end
         else
             begin
-                cnt <= cnt + 2'h1;
-					 if (cnt == 2'h3)
-					     begin
-                    if (cnt_bit == 4'hd)
-                        cnt_bit <= 4'h0;
+                cnt16 <= cnt16 + 16'b1;
+                cnt26 <= cnt26 + 26'b1;
+                if (cnt26[25] == 1'b1)
+                    data <= { H, E, L, L, O, X };
+                else
+                    data <= { X, H, E, L, L, O };
+                if (cnt16 == 16'hffff)
+                    if (sel == 6'b000_001)
+                        begin
+                            sel <= 6'b000_010;
+                            seg <= data[15:8];
+                        end
+                    else if (sel == 6'b000_010)
+                        begin
+                            sel <= 6'b000_100;
+                            seg <= data[23:16];
+                        end
+                    else if (sel == 6'b000_100)
+                        begin
+                            sel <= 6'b001_000;
+                            seg <= data[31:24];
+                        end
+                    else if (sel == 6'b001_000)
+                        begin
+                            sel <= 6'b010_000;
+                            seg <= data[39:32];
+                        end
+                    else if (sel == 6'b010_000)
+                        begin
+                            sel <= 6'b100_000;
+                            seg <= data[47:40];
+                        end
                     else
-                        cnt_bit <= cnt_bit + 4'h1;
-						  end
-					 else
-					     cnt_bit <= cnt_bit;
-                // output ds:
-                if (cnt == 2'b0)
-                    ds <= data[cnt_bit];
-                else
-                    ds <= ds;
-                // output shcp:
-                if (cnt == 2'h2)
-                    shcp <= 1'b1;
-                else if (cnt == 2'h0)
-                    shcp <= 1'b0;
-                else
-                    shcp <= shcp;
-                // output stcp:
-                if (cnt == 2'h0 && cnt_bit == 4'h0)
-                    stcp <= 1'b1;
-                else if (cnt == 2'h2 && cnt_bit == 4'h0)
-                    stcp <= 1'b0;
-                else
-                    stcp <= stcp;
+                        begin
+                            sel <= 6'b000_001;
+                            seg <= data[7:0];
+                        end
             end
     end
 
-    assign oe = 1'b0;
-
+    disp_driver disp_driver_instance(
+        .clk(clk),
+        .rst(rst),
+        .seg(seg),
+        .sel(sel),
+        .shcp(shcp),
+        .stcp(stcp),
+        .ds(ds),
+        .oe(oe)
+    );
 
 endmodule

@@ -7,16 +7,15 @@ module tb_words();
     wire shcp;
     wire stcp;
     wire ds;
-	 wire oe;
-	 
+    wire oe;
 
     initial begin
         clk = 1'b1;
-		  rst = 1'b0;
+        rst = 1'b0;
         #100
         rst = 1'b1;
         #10000
-		  $stop;
+        $stop;
     end
 
     always #10 clk = ~clk;
@@ -27,8 +26,7 @@ module tb_words();
         .shcp(shcp),
         .stcp(stcp),
         .ds(ds),
-		  .oe(oe)
+        .oe(oe)
     );
-
 
 endmodule
