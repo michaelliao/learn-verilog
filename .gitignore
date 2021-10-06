@@ -6,6 +6,7 @@
 
 # Prerequisites
 *.d
+*.vcd
 
 # Compiled Object files
 *.slo
