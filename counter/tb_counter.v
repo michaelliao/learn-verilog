@@ -3,28 +3,29 @@
 module tb_counter ();
 
     reg clk;
-    reg rst;
+    reg rst_n;
     wire [7:0] out;
+
+    counter counter_instance(
+        .clk(clk),
+        .rst_n(rst_n),
+        .out(out)
+    );
 
     initial begin
         clk = 1'b1;
-        rst = 1'b0;
+        rst_n = 1'b0;
         #100
-        rst = 1'b1;
-		  #100
-		  rst = 1'b0;
-        #100
-        rst = 1'b1;
+        rst_n = 1'b1;
         #10000
-        $finish();
+        $finish;
     end
 
     always #10 clk = ~clk;
 
-    counter ins(
-        .clk(clk),
-        .rst(rst),
-        .out(out)
-    );
+    initial begin
+        $dumpfile("tb_counter.vcd");
+        $dumpvars(0, counter_instance);
+    end
 
 endmodule
