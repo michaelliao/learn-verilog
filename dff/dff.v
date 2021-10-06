@@ -1,25 +1,17 @@
 
 module dff(
-    input d,
     input clk,
-    input rst,
-    output reg q
+    input rst_n,
+    input d,
+    output reg out
 );
 
     // async reset:
-    always @ (posedge clk or negedge rst) begin
-        if (rst == 1'b0)
-            q <= 0;
+    always @ (posedge clk or negedge rst_n) begin
+        if (rst_n == 1'b0)
+            out <= 0;
         else
-            q <= d;
+            out <= d;
 	 end
-
-    // sync reset:
-//    always @ (posedge clk) begin
-//        if (rst == 1'b0)
-//            q <= 0;
-//        else
-//            q <= d;
-//	   end
 
 endmodule
