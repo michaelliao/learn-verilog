@@ -12,6 +12,6 @@ module dff(
             out <= 0;
         else
             out <= d;
-	 end
+	end
 
 endmodule
