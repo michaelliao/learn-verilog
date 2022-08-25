@@ -13,8 +13,6 @@ VGA Timings: http://martin.hinner.info/vga/timing.html
 
 ***********************************************************************************************/
 
-`define DATA_0 10'd0
-
 module vga_ctrl (
     input  wire clk,
     input  wire rst_n,
@@ -27,6 +25,8 @@ module vga_ctrl (
     output wire [9:0]  pix_y,
     output wire [15:0] out_rgb
 );
+
+`define DATA_0 10'd0
 
 parameter H_SYNC  = 10'd96,
           H_BACK  = 10'd48,
@@ -71,21 +71,21 @@ parameter H_SYNC  = 10'd96,
     end
 
     assign pix_valid = rst_n 
-			&& (cnt_h >= H_SYNC + H_BACK)
-            && (cnt_h < H_SYNC + H_BACK + H_SIZE)
-            && (cnt_v >= V_SYNC + V_BACK)
-            && (cnt_v < V_SYNC + V_BACK + V_SIZE)
+			&& (cnt_h >= (H_SYNC + H_BACK))
+            && (cnt_h < (H_SYNC + H_BACK + H_SIZE))
+            && (cnt_v >= (V_SYNC + V_BACK))
+            && (cnt_v < (V_SYNC + V_BACK + V_SIZE))
             ? 1'b1 : 1'b0;
 
     assign pix_data_req = rst_n 
-			&& (cnt_h > H_SYNC + H_BACK)
-            && (cnt_h < H_SYNC + H_BACK + H_SIZE - 1)
-            && (cnt_v > V_SYNC + V_BACK)
-            && (cnt_v < V_SYNC + V_BACK + V_SIZE - 1)
+			&& (cnt_h >= (H_SYNC + H_BACK - 1))
+            && (cnt_h < (H_SYNC + H_BACK + H_SIZE - 1))
+            && (cnt_v >= (V_SYNC + V_BACK - 1))
+            && (cnt_v < (V_SYNC + V_BACK + V_SIZE - 1))
             ? 1'b1 : 1'b0;
 
-    assign pix_x = pix_data_req == 1'b1 ? (cnt_h - (H_SYNC + H_BACK - 1)) : 10'h3ff;
-    assign pix_y = pix_data_req == 1'b1 ? (cnt_v - (V_SYNC + V_BACK - 1)) : 10'h3ff;
+    assign pix_x = pix_data_req == 1'b1 ? (cnt_h - (H_SYNC + H_BACK - 1)) : 10'h000;
+    assign pix_y = pix_data_req == 1'b1 ? (cnt_v - (V_SYNC + V_BACK - 1)) : 10'h000;
 
     assign hsync = rst_n & (cnt_h < H_SYNC ? 1'b1 : 1'b0);
 
