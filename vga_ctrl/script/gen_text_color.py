@@ -5,22 +5,22 @@
 
 
 COLORS = [
-    ('BLACK',     0x000000),
-    ('BLUE',      0x0000AA),
-    ('GREEN',     0x00AA00),
-    ('CYAN',      0x00AAAA),
-    ('RED',       0xAA0000),
-    ('MAGENTA',   0xAA00AA),
-    ('BROWN',     0xAA5500),
-    ('L_GRAY',    0xAAAAAA),
-    ('D_GRAY',    0x555555),
-    ('L_BLUE',    0x5555FF),
-    ('L_GREEN',   0x55FF55),
-    ('L_CYAN',    0x55FFFF),
-    ('L_RED',     0xFF5555),
-    ('L_MAGENTA', 0xFF55FF),
-    ('YELLOW',    0xFFFF55),
-    ('WHITE',     0xFFFFFF)
+    (0x000000, 'black'),
+    (0x0000AA, 'blue'),
+    (0x00AA00, 'green'),
+    (0x00AAAA, 'cyan'),
+    (0xAA0000, 'red'),
+    (0xAA00AA, 'magenta'),
+    (0xAA5500, 'brown'),
+    (0xAAAAAA, 'light gray'),
+    (0x555555, 'dark gray'),
+    (0x5555FF, 'light blue'),
+    (0x55FF55, 'light green'),
+    (0x55FFFF, 'light cyan'),
+    (0xFF5555, 'light red'),
+    (0xFF55FF, 'light magenta'),
+    (0xFFFF55, 'yellow'),
+    (0xFFFFFF, 'white')
 ]
 
 template_1 = '''// VGA 16 Color Palette:
@@ -30,14 +30,11 @@ module text_color (
     input  wire [3:0] color_index,
     output wire [15:0] color_rgb
 );
-'''
-
-template_2 = '''
     always @ (*) begin
         case (color_index)
 '''
 
-template_3 = '''        endcase
+template_2 = '''        endcase
     end
 endmodule
 '''
@@ -63,23 +60,20 @@ def main():
         exit(1)
     s = template_1
     n = 0
-    for name, rgb in COLORS:
+    for rgb, name in COLORS:
         r = (rgb & 0xff0000) >> 16
         g = (rgb & 0xff00) >> 8
         b = (rgb & 0xff)
         sr = r * 32 // 256
         sg = g * 64 // 256
         sb = b * 32 // 256
-        s = s + '    `define COLOR_%d 16\'b%s%s%s // %s = #%s\n' % (
-            n, to_bin(sr, 5), to_bin(sg, 6), to_bin(sb, 5), name, to_rgb(rgb))
+        s = s + \
+            f'            4\'d{n}: color_rgb = 16\'b{to_bin(sr,5)}{to_bin(sg, 6)}{to_bin(sb, 5)};' + \
+            f' // #{to_rgb(rgb)} = {name}\n'
         n = n + 1
 
     s = s + template_2
 
-    for i in range(16):
-        s = s + f'            4\'d{i}: color_rgb = COLOR_{i};\n'
-
-    s = s + template_3
     print(s)
 
     with open('../text_color.v', 'w') as f:
