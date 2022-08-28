@@ -1,6 +1,6 @@
 -- 8x16 font bitmap data
 WIDTH = 8;
-DEPTH = 96;
+DEPTH = 1536;
 ADDRESS_RADIX = HEX;
 DATA_RADIX = BIN;
 CONTENT
