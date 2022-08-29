@@ -2,6 +2,11 @@
 cd "$(dirname "$0")"
 
 top_module=`pwd | awk -F/ '{print $NF}'`
+
+if ! [ -z "$1" ]; then
+    top_module="$1"
+fi
+
 src_file="$top_module.v"
 src_out_file="$top_module.out"
 tb_file="tb_$top_module.v"
