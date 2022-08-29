@@ -42,7 +42,7 @@ def add_line(data, y, line):
         exit(1)
     while len(line) < COLS:
         line = line + ' '
-    s = '%03x :' % (COLS * 2 * y)
+    s = '%04x :' % (COLS * 2 * y)
     for x, ch in enumerate(line):
         s = s + ' ' + color_of_char(x, y, ch) + ' %02x' % ord(ch)
     s = s + ';'

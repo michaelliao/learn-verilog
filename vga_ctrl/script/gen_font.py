@@ -26,10 +26,11 @@ def get_char(im, row, col):
 
 def add_data(lines, addr, bits):
     parts = len(bits) // 8
-    line = '%03x :' % addr
+    line = '%04x :' % addr
     for part in range(parts):
         offset = part * 8
         line = line + ' %s' % bits[offset: offset + 8]
+    line = line + ';'
     lines.append(line)
 
 
