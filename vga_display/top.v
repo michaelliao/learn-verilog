@@ -1,57 +1,92 @@
 module top(
-	input wire clk,
-	input wire rst_n,
+	input wire sys_clk,
+	input wire sys_rst_n,
+//	input wire wr_en,
+//	input wire [9:0] wr_address,
+//	input wire [15:0] wr_data,
 	output wire hsync,
 	output wire vsync,
 	output wire [15:0] rgb
 );
 	wire vga_clk;
+	wire vga_rst_n;
 	wire pll_locked;
-	wire [7:0] font_data;
-	wire [15:0] buffer_data;
-	wire [15:0] pix_data;
+
+	// char index: 0 ~ 1999:
+	wire [10:0] char_index;
+	// char data: 2 bytes: BG/FG color, ASCII code:
+	wire [15:0] char_data;
+	// char pixel x, y:
+	wire [2:0] char_pixel_x;
+	wire [3:0] char_pixel_y;
+
+    // a single byte represent a line of char font:
+	wire [7:0] font_line_data;
+	// pixel color index:
+	wire [3:0] pixel_color_index;
+    // pixel rgb color:
+	wire [15:0] pix_rgb;
+
+    // pixel x, y:
 	wire [9:0] pix_x;
 	wire [9:0] pix_y;
 
 	pll_vga pll_vga_inst (
-		.areset (~rst_n),
-		.inclk0 (clk),
+		.areset (~sys_rst_n),
+		.inclk0 (sys_clk),
 		.c0 (vga_clk),
 		.locked(pll_locked)
 	);
 
+	assign vga_rst_n = sys_rst_n & pll_locked;
+
 	rom_font rom_font_inst (
 		.clock (vga_clk),
-		.address (11'b0),
-		.q (font_data)
-	);
-	
-	ram_buffer ram_buffer_inst (
-	    .rdclock (vga_clk),
-	    .wrclock (vga_clk),
-	    .data (16'd0),
-	    .rdaddress (10'd0),
-	    .wraddress (10'd0),
-	    .wren (1'b0),
-	    .q (buffer_data)
+		.address ({ char_data[7:0], char_pixel_y}),
+		.q (font_line_data)
 	);
 
-	vga_data vga_data_inst (
-		.clk (vga_clk),
-		.rst_n (rst_n & pll_locked),
-		.pix_x (pix_x),
-		.pix_y (pix_y),
-		.pix_rgb (pix_data)
+    pixel_index_color pixel_index_color_inst (
+    	.font_line_data (font_line_data),
+        .char_pix_x (char_pixel_x),
+        .bg_fg_index (char_data[15:8]),
+        .color_index (pixel_color_index)
+	);
+
+	index_color_to_rgb index_color_to_rgb_inst (
+		.color_index (pixel_color_index),
+		.color_rgb (pix_rgb)
+	);
+
+	ram_buffer ram_buffer_inst (
+	    .rdclock (vga_clk),
+	    .wrclock (sys_clk),
+	    .data (16'd0),
+	    .rdaddress (char_index),
+	    .wraddress (10'd0),
+	    .wren (1'b0),
+	    .q (char_data)
 	);
 
 	vga_ctrl vga_ctrl_inst (
 		.clk (vga_clk),
-		.rst_n (rst_n & pll_locked),
-		.in_rgb (pix_data),
+		.rst_n (vga_rst_n),
+		.in_rgb (pix_rgb),
 		.pix_x (pix_x),
 		.pix_y (pix_y),
 		.hsync (hsync),
 		.vsync (vsync),
 		.out_rgb (rgb)
+	);
+
+    pixel_to_char pixel_to_char_inst (
+		.clk (vga_clk),
+		.rst_n (vga_rst_n),
+		.pix_x (pix_x),
+		.pix_y (pix_y),
+		.en (char_en),
+		.char_index (char_index),
+		.char_pixel_x (char_pixel_x),
+		.char_pixel_y (char_pixel_y)
 	);
 endmodule
