@@ -16,9 +16,13 @@ module top(
 	wire [10:0] char_index;
 	// char data: 2 bytes: BG/FG color, ASCII code:
 	wire [15:0] char_data;
+	wire [7:0] color_index_delay;
 	// char pixel x, y:
 	wire [2:0] char_pixel_x;
 	wire [3:0] char_pixel_y;
+	wire [2:0] char_pixel_x_delay_1;
+	wire [2:0] char_pixel_x_delay_2;
+	wire [3:0] char_pixel_y_delay;
 
     // a single byte represent a line of char font:
 	wire [7:0] font_line_data;
@@ -41,16 +45,40 @@ module top(
 
 	assign vga_rst_n = sys_rst_n & pll_locked;
 
+	clk_delay #(3) clk_delay_for_char_pixel_x_1 (
+		.clk (vga_clk),
+		.in_data (char_pixel_x),
+		.out_data (char_pixel_x_delay_1)
+	);
+
+	clk_delay #(3) clk_delay_for_char_pixel_x_2 (
+		.clk (vga_clk),
+		.in_data (char_pixel_x_delay_1),
+		.out_data (char_pixel_x_delay_2)
+	);
+
+	clk_delay #(4) clk_delay_for_char_pixel_y (
+		.clk (vga_clk),
+		.in_data (char_pixel_y),
+		.out_data (char_pixel_y_delay)
+	);
+
 	rom_font rom_font_inst (
 		.clock (vga_clk),
-		.address ({ char_data[7:0], char_pixel_y}),
+		.address ({ char_data[7:0], char_pixel_y_delay}),
 		.q (font_line_data)
+	);
+
+	clk_delay #(8) clk_delay_for_color_index (
+		.clk (vga_clk),
+		.in_data (char_data[15:8]),
+		.out_data (color_index_delay)
 	);
 
     pixel_index_color pixel_index_color_inst (
     	.font_line_data (font_line_data),
-        .char_pix_x (char_pixel_x),
-        .bg_fg_index (char_data[15:8]),
+        .char_pix_x (char_pixel_x_delay_2),
+        .bg_fg_index (color_index_delay),
         .color_index (pixel_color_index)
 	);
 
@@ -81,11 +109,8 @@ module top(
 	);
 
     pixel_to_char pixel_to_char_inst (
-		.clk (vga_clk),
-		.rst_n (vga_rst_n),
 		.pix_x (pix_x),
 		.pix_y (pix_y),
-		.en (pix_data_req),
 		.char_index (char_index),
 		.char_pixel_x (char_pixel_x),
 		.char_pixel_y (char_pixel_y)

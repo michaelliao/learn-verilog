@@ -78,14 +78,14 @@ parameter H_SYNC  = 10'd96,
             ? 1'b1 : 1'b0;
 
     assign pix_data_req = rst_n 
-			&& (cnt_h >= (H_SYNC + H_BACK - 1))
-            && (cnt_h < (H_SYNC + H_BACK + H_SIZE - 1))
-            && (cnt_v >= (V_SYNC + V_BACK - 1))
-            && (cnt_v < (V_SYNC + V_BACK + V_SIZE - 1))
+			&& (cnt_h >= (H_SYNC + H_BACK - 2))
+            && (cnt_h < (H_SYNC + H_BACK + H_SIZE - 2))
+            && (cnt_v >= (V_SYNC + V_BACK - 2))
+            && (cnt_v < (V_SYNC + V_BACK + V_SIZE - 2))
             ? 1'b1 : 1'b0;
 
-    assign pix_x = pix_data_req == 1'b1 ? (cnt_h - (H_SYNC + H_BACK - 1)) : 10'h000;
-    assign pix_y = pix_data_req == 1'b1 ? (cnt_v - (V_SYNC + V_BACK - 1)) : 10'h000;
+    assign pix_x = pix_data_req == 1'b1 ? (cnt_h - (H_SYNC + H_BACK - 2)) : 10'h000;
+    assign pix_y = pix_data_req == 1'b1 ? (cnt_v - (V_SYNC + V_BACK - 2)) : 10'h000;
 
     assign hsync = rst_n & (cnt_h < H_SYNC ? 1'b1 : 1'b0);
 
