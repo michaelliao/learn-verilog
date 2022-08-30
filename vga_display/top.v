@@ -27,6 +27,7 @@ module top(
     // pixel rgb color:
 	wire [15:0] pix_rgb;
 
+	wire pix_data_req;
     // pixel x, y:
 	wire [9:0] pix_x;
 	wire [9:0] pix_y;
@@ -84,7 +85,7 @@ module top(
 		.rst_n (vga_rst_n),
 		.pix_x (pix_x),
 		.pix_y (pix_y),
-		.en (char_en),
+		.en (pix_data_req),
 		.char_index (char_index),
 		.char_pixel_x (char_pixel_x),
 		.char_pixel_y (char_pixel_y)

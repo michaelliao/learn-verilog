@@ -3,7 +3,7 @@ module pixel_index_color (
     input wire [7:0] font_line_data,
     input wire [2:0] char_pix_x,
     input wire [7:0] bg_fg_index,
-    output reg [3:0] color_index
+    output wire [3:0] color_index
 );
     reg bit;
 
@@ -21,6 +21,6 @@ module pixel_index_color (
     end
 
     // if bit is 1, return fg color index, otherwise bg color:
-    assign color_index = bit == 1'b1 ? bg_fg_index[3:0] : bg_fg_index[7:4]
+    assign color_index = bit == 1'b1 ? bg_fg_index[3:0] : bg_fg_index[7:4];
 
 endmodule
