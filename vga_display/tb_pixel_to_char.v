@@ -34,8 +34,6 @@ module tb_pixel_to_char ();
         $finish;
     end
 
-    always #1 clk = ~clk;
-
     initial begin
         $dumpfile("tb_pixel_to_char.vcd");
         $dumpvars(0, component);
