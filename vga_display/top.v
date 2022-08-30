@@ -92,7 +92,7 @@ module top(
 	    .wrclock (sys_clk),
 	    .data (16'd0),
 	    .rdaddress (char_index),
-	    .wraddress (10'd0),
+	    .wraddress (11'd0),
 	    .wren (1'b0),
 	    .q (char_data)
 	);

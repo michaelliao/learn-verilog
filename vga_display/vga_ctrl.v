@@ -20,7 +20,6 @@ module vga_ctrl (
 
     output wire hsync,
     output wire vsync,
-    output wire pix_data_req,
     output wire [9:0]  pix_x,
     output wire [9:0]  pix_y,
     output wire [15:0] out_rgb
@@ -46,6 +45,7 @@ parameter H_SYNC  = 10'd96,
     reg [9:0] cnt_v;
 
     wire pix_valid;
+    wire pix_data_req;
 
     always @ (posedge clk or negedge rst_n) begin
         if (rst_n == 1'b0)
@@ -84,8 +84,8 @@ parameter H_SYNC  = 10'd96,
             && (cnt_v < (V_SYNC + V_BACK + V_SIZE - 2))
             ? 1'b1 : 1'b0;
 
-    assign pix_x = pix_data_req == 1'b1 ? (cnt_h - (H_SYNC + H_BACK - 2)) : 10'h000;
-    assign pix_y = pix_data_req == 1'b1 ? (cnt_v - (V_SYNC + V_BACK - 2)) : 10'h000;
+    assign pix_x = pix_data_req == 1'b1 ? (cnt_h - (H_SYNC + H_BACK - 10'd2)) : 10'h000;
+    assign pix_y = pix_data_req == 1'b1 ? (cnt_v - (V_SYNC + V_BACK - 10'd2)) : 10'h000;
 
     assign hsync = rst_n & (cnt_h < H_SYNC ? 1'b1 : 1'b0);
 
