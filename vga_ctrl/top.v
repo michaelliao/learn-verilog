@@ -13,7 +13,7 @@ module top(
 	wire [9:0] pix_x;
 	wire [9:0] pix_y;
 
-	pll_ip pll_inst (
+	pll_vga pll_vga_inst (
 		.areset (~rst_n),
 		.inclk0 (clk),
 		.c0 (vga_clk),

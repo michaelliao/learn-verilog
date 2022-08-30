@@ -1,4 +1,4 @@
-pll_ip	pll_ip_inst (
+pll_vga	pll_vga_inst (
 	.areset ( areset_sig ),
 	.inclk0 ( inclk0_sig ),
 	.c0 ( c0_sig ),
