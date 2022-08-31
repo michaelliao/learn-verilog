@@ -29,9 +29,9 @@ def add_data(lines, addr, bits):
     line = '%04x :' % addr
     for part in range(parts):
         offset = part * 8
-        line = line + ' %s' % bits[offset: offset + 8]
-    line = line + ';'
-    lines.append(line)
+        line = '%04x : %s;' % (addr, bits[offset: offset + 8])
+        lines.append(line)
+        addr = addr + 1
 
 
 def main():
@@ -62,7 +62,7 @@ def main():
 
     data.append('END;')
     print(f'writing mif...')
-    with open('../font/font.mif', 'w') as f:
+    with open('../font.mif', 'w') as f:
         f.write('\n'.join(data))
     print('ok')
 

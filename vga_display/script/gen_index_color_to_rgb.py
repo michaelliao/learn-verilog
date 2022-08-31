@@ -76,7 +76,7 @@ def main():
 
     print(s)
 
-    with open('../text_color.v', 'w') as f:
+    with open('../index_color_to_rgb.v', 'w') as f:
         f.write(s)
 
 

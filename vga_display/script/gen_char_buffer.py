@@ -42,13 +42,12 @@ def add_line(data, y, line):
         exit(1)
     while len(line) < COLS:
         line = line + ' '
-    s = '%04x :' % (COLS * 2 * y)
+    addr = COLS * y
     for x, ch in enumerate(line):
-        s = s + ' ' + color_of_char(x, y, ch) + ' %02x' % ord(ch)
-    s = s + ';'
-    print(f'{s}')
-    data.append(s)
-
+        s = '%04x : %s%02x;' % (addr, color_of_char(x, y, ch), ord(ch))
+        print(f'{s}')
+        data.append(s)
+        addr = addr + 1
 
 def main():
     with open('../font/init-screen.txt', 'r') as f:
@@ -58,15 +57,15 @@ def main():
         exit(1)
     while len(lines) < ROWS:
         lines.append('')
-    data = ['-- 80 x 25 character buffer data', 'WIDTH = 8;',
-            f'DEPTH = {COLS*ROWS*2};', 'ADDRESS_RADIX = HEX;', 'DATA_RADIX = HEX;', 'CONTENT', 'BEGIN']
+    data = ['-- 80 x 25 character buffer data', 'WIDTH = 16;',
+            f'DEPTH = {COLS*ROWS};', 'ADDRESS_RADIX = HEX;', 'DATA_RADIX = HEX;', 'CONTENT', 'BEGIN']
     n = 0
     for line in lines:
         add_line(data, n, line.rstrip())
         n = n + 1
     data.append('END;')
     print(f'writing mif...')
-    with open('../font/char-buffer.mif', 'w') as f:
+    with open('../char-buffer.mif', 'w') as f:
         f.write('\n'.join(data))
     print('ok')
 
