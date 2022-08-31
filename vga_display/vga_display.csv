@@ -1,0 +1,42 @@
+# Copyright (C) 2020  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and any partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel FPGA IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Intel and sold by Intel or its authorized distributors.  Please
+# refer to the applicable agreement for further details, at
+# https://fpgasoftware.intel.com/eula.
+
+# Quartus Prime Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
+# File: C:\Users\Michael\Git\GitHub\learn-verilog\vga_display\vga_display.csv
+# Generated on: Tue Aug 30 14:58:54 2022
+
+# Note: The column header names should not be changed if you wish to import this .csv file into the Quartus Prime software.
+
+To,Direction,Location,I/O Bank,VREF Group,Fitter Location,I/O Standard,Reserved,Current Strength,Slew Rate,Differential Pair,Strict Preservation
+hsync,Output,PIN_C2,1,B1_N0,PIN_C2,2.5 V,,,,,
+rgb[0],Output,PIN_B4,8,B8_N0,PIN_B4,2.5 V,,,,,
+rgb[1],Output,PIN_A2,8,B8_N0,PIN_A2,2.5 V,,,,,
+rgb[2],Output,PIN_B5,8,B8_N0,PIN_B5,2.5 V,,,,,
+rgb[3],Output,PIN_A6,8,B8_N0,PIN_A6,2.5 V,,,,,
+rgb[4],Output,PIN_B6,8,B8_N0,PIN_B6,2.5 V,,,,,
+rgb[5],Output,PIN_F6,8,B8_N0,PIN_F6,2.5 V,,,,,
+rgb[6],Output,PIN_F7,8,B8_N0,PIN_F7,2.5 V,,,,,
+rgb[7],Output,PIN_A7,8,B8_N0,PIN_A7,2.5 V,,,,,
+rgb[8],Output,PIN_B7,8,B8_N0,PIN_B7,2.5 V,,,,,
+rgb[9],Output,PIN_E8,8,B8_N0,PIN_E8,2.5 V,,,,,
+rgb[10],Output,PIN_F8,8,B8_N0,PIN_F8,2.5 V,,,,,
+rgb[11],Output,PIN_A8,8,B8_N0,PIN_A8,2.5 V,,,,,
+rgb[12],Output,PIN_B8,8,B8_N0,PIN_B8,2.5 V,,,,,
+rgb[13],Output,PIN_E7,8,B8_N0,PIN_E7,2.5 V,,,,,
+rgb[14],Output,PIN_E6,8,B8_N0,PIN_E6,2.5 V,,,,,
+rgb[15],Output,PIN_A5,8,B8_N0,PIN_A5,2.5 V,,,,,
+sys_clk,Input,PIN_E1,1,B1_N0,PIN_E1,,,,,,
+sys_rst_n,Input,PIN_M15,5,B5_N0,PIN_M2,,,,,,
+vsync,Output,PIN_D1,1,B1_N0,PIN_D1,2.5 V,,,,,

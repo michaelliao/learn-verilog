@@ -9,14 +9,14 @@ module pixel_index_color (
 
     always @ (*) begin
         case (char_pix_x)
-            3'd0: pix = font_line_data[0];
-            3'd1: pix = font_line_data[1];
-            3'd2: pix = font_line_data[2];
-            3'd3: pix = font_line_data[3];
-            3'd4: pix = font_line_data[4];
-            3'd5: pix = font_line_data[5];
-            3'd6: pix = font_line_data[6];
-            3'd7: pix = font_line_data[7];
+            3'd0: pix = font_line_data[7];
+            3'd1: pix = font_line_data[6];
+            3'd2: pix = font_line_data[5];
+            3'd3: pix = font_line_data[4];
+            3'd4: pix = font_line_data[3];
+            3'd5: pix = font_line_data[2];
+            3'd6: pix = font_line_data[1];
+            3'd7: pix = font_line_data[0];
         endcase
     end
 

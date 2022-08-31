@@ -38,6 +38,9 @@ parameter H_SYNC  = 10'd96,
           V_FRONT = 10'd10,
           V_TOTAL = V_SYNC + V_BACK + V_SIZE + V_FRONT; // 525
 
+    parameter PIX_Y_START = 10'd32,
+              PIX_Y_END = PIX_Y_START + 25 * 16;
+
     // 0 ~ 799
     reg [9:0] cnt_h;
 
@@ -91,6 +94,6 @@ parameter H_SYNC  = 10'd96,
 
     assign vsync = rst_n & (cnt_v < V_SYNC ? 1'b1 : 1'b0);
 
-    assign out_rgb = pix_valid == 1'b1 ? in_rgb : 16'h0000;
+    assign out_rgb = pix_valid == 1'b1 && pix_y >= PIX_Y_START && pix_y < PIX_Y_END ? in_rgb : 16'h0000;
 
 endmodule
