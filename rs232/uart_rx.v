@@ -30,10 +30,13 @@ module uart_rx #(
     assign out_data = out_en == 1'b1 ? data : 8'd0;
     assign out_parity = out_en == 1'b1 ? parity : 1'b0;
 
-    always @ (posedge clk or negedge rst_n) begin
+    always @ (posedge clk) begin
         rx_detect[0] <= in_data;
         rx_detect[1] <= rx_detect[0];
         rx_detect[2] <= rx_detect[1];
+    end
+
+    always @ (posedge clk or negedge rst_n) begin
         if (rst_n == 1'b0) begin
             status <= IDLE;
             cnt <= CNT_0;
