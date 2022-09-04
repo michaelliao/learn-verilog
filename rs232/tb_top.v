@@ -8,23 +8,11 @@ module tb_top ();
     wire out_data;
     wire out_en;
 
-    wire [7:0] data;
-    wire data_en;
-
-    uart_rx #(2_500_000) rx_instance (
+    loopback component (
         .clk (clk),
         .rst_n (rst_n),
         .in_data (in_data),
         .out_data (data),
-        .out_en (data_en)
-    );
-
-    uart_tx #(2_500_000) tx_instance (
-        .clk (clk),
-        .rst_n (rst_n),
-        .in_data (data),
-        .in_en (data_en),
-        .out_data (out_data),
         .out_en (out_en)
     );
 
@@ -32,71 +20,70 @@ module tb_top ();
         clk = 1'b1;
         rst_n = 1'b0;
         in_data = 8'b1;
-        #10
+        #100
         rst_n = 1'b1;
-        #20
+        #20000
         // start 0:
         in_data = 1'b0;
-        #40
+        #104166
         // 01010101:
         in_data = 1'b1;
-        #40
+        #104166
         in_data = 1'b0;
-        #40
+        #104166
         in_data = 1'b1;
-        #40
+        #104166
         in_data = 1'b0;
-        #40
+        #104166
         in_data = 1'b1;
-        #40
+        #104166
         in_data = 1'b0;
-        #40
+        #104166
         in_data = 1'b1;
-        #40
+        #104166
         in_data = 1'b0;
-        #40
+        #104166
         // parity:
         in_data = 1'b1;
-        #40
+        #104166
         // end 1:
         in_data = 1'b1;
-        #100
+        #1300000
         // next byte:
         // start 0:
         in_data = 1'b0;
-        #40
+        #104166
         // 10111100:
         in_data = 1'b0;
-        #40
+        #104166
         in_data = 1'b0;
-        #40
+        #104166
         in_data = 1'b1;
-        #40
+        #104166
         in_data = 1'b1;
-        #40
+        #104166
         in_data = 1'b1;
-        #40
+        #104166
         in_data = 1'b1;
-        #40
+        #104166
         in_data = 1'b0;
-        #40
+        #104166
         in_data = 1'b1;
-        #40
+        #104166
         // parity:
         in_data = 1'b0;
-        #40
+        #104166
         // end 1:
         in_data = 1'b1;
-        #40
-        #800
+        #104166
+        #1300000
         $finish;
     end
 
-    always #1 clk = ~clk;
+    always #10 clk = ~clk;
 
     initial begin
         $dumpfile("tb_top.vcd");
-        $dumpvars(0, rx_instance);
-        $dumpvars(1, tx_instance);
+        $dumpvars(0, component);
     end
 endmodule
