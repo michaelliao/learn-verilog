@@ -17,13 +17,13 @@ set wave_out_file=tb_%top_module%.vcd
 if Not Exist %src_file% goto :ERROR_SRC_FILE
 
 echo compile %src_file% -^> %src_out_file% ...
-iverilog -s %top_module% -o %src_out_file% %src_file%
+iverilog -y . -s %top_module% -o %src_out_file% %src_file%
 if ERRORLEVEL 1 goto :END
 
 If Not Exist %tb_file% goto :NO_TESTBENCH
 
 echo compile %tb_file% -^> %tb_out_file% ...
-iverilog -s tb_%top_module% -o %tb_out_file% %src_file% %tb_file%
+iverilog -y . -s tb_%top_module% -o %tb_out_file% %src_file% %tb_file%
 if ERRORLEVEL 1 goto :END
 
 echo simulate %tb_out_file ...

@@ -21,7 +21,7 @@ if ! [ -e $src_file ]; then
 fi
 
 echo "compile $src_file -> $src_out_file ..."
-iverilog -s $top_module -o $src_out_file $src_file
+iverilog -y . -s $top_module -o $src_out_file $src_file
 if ! [ $? -eq 0 ]; then
     exit 1
 fi
@@ -30,7 +30,7 @@ if ! [ -e $tb_file ]; then
     echo "[WARNING] testbench file $tb_file not found."
 else
     echo "compile $tb_file -> $tb_out_file ..."
-    iverilog -s tb_$top_module -o $tb_out_file $src_file $tb_file
+    iverilog -y . -s tb_$top_module -o $tb_out_file $src_file $tb_file
     if ! [ $? -eq 0 ]; then
         exit 1
     fi
