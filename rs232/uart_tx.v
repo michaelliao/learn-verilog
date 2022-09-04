@@ -44,7 +44,7 @@ module uart_tx #(
                     bps_cnt <= 4'd1;
                     cnt <= CNT_MAX;
                     data <= in_data;
-                    parity <= ^in_data;
+                    parity <= ~(^in_data);
                     out_data <= 1'b1;
                 end else begin
                     // keep IDLE status:
