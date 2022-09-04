@@ -63,12 +63,8 @@ module top (
         .key_out (key1)
     );
 
-    key_filter key_filter_0 (
-        .clk (clk),
-        .rst_n (rst_n),
-        .key_in (key_in0),
-        .key_out (key0)
-    );
+    // test not using key_filter for key 0:
+    assign key0 = key_in0;
 
     disp_driver disp_driver_instance (
         .clk (clk),
