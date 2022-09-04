@@ -73,49 +73,49 @@ module uart_rx #(
                         5'd3: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= { data[7:1], in_data };
+                            data[0] <= in_data;
                             out_en <= 1'b0;
                         end
                         5'd5: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= { data[7:2], in_data, data[0] };
+                            data[1] <= in_data;
                             out_en <= 1'b0;
                         end
                         5'd7: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= { data[7:3], in_data, data[1:0] };
+                            data[2] <= in_data;
                             out_en <= 1'b0;
                         end
                         5'd9: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= { data[7:4], in_data, data[2:0] };
+                            data[3] <= in_data;
                             out_en <= 1'b0;
                         end
                         5'd11: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= { data[7:5], in_data, data[3:0] };
+                            data[4] <= in_data;
                             out_en <= 1'b0;
                         end
                         5'd13: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= { data[7:6], in_data, data[4:0] };
+                            data[5] <= in_data;
                             out_en <= 1'b0;
                         end
                         5'd15: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= { data[7], in_data, data[5:0] };
+                            data[6] <= in_data;
                             out_en <= 1'b0;
                         end
                         5'd17: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= { in_data, data[6:0] };
+                            data[7] <= in_data;
                             out_en <= 1'b0;
                         end
                         5'd19: begin
