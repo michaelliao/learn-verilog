@@ -1,0 +1,195 @@
+// display number
+
+module top (
+    input wire clk,
+    input wire rst_n,
+    input wire key_in3,
+    input wire key_in2,
+    input wire key_in1,
+    input wire key_in0,
+    output wire shcp,
+    output wire stcp,
+    output wire ds,
+    output wire oe
+);
+
+    parameter N0 = 8'b00000011;
+    parameter N1 = 8'b10011111;
+    parameter N2 = 8'b00100101;
+    parameter N3 = 8'b00001101;
+    parameter N4 = 8'b10011001;
+    parameter N5 = 8'b01001001;
+    parameter N6 = 8'b01000001;
+    parameter N7 = 8'b00011111;
+    parameter N8 = 8'b00000001;
+    parameter N9 = 8'b00001001;
+    parameter E = 8'b01100001;
+
+    wire key3;
+    wire key2;
+    wire key1;
+    wire key0;
+
+    reg [3:0] cnt3;
+    reg [3:0] cnt2;
+    reg [3:0] cnt1;
+    reg [3:0] cnt0;
+
+    reg [47:0] data;
+
+    reg [15:0] cnt16; // 0 ~ 65535
+
+    reg [7:0] seg;
+    reg [5:0] sel;
+
+    key_filter key_filter_3 (
+        .clk (clk),
+        .rst_n (rst_n),
+        .key_in (key_in3),
+        .key_out (key3)
+    );
+
+    key_filter key_filter_2 (
+        .clk (clk),
+        .rst_n (rst_n),
+        .key_in (key_in2),
+        .key_out (key2)
+    );
+
+    key_filter key_filter_1 (
+        .clk (clk),
+        .rst_n (rst_n),
+        .key_in (key_in1),
+        .key_out (key1)
+    );
+
+    key_filter key_filter_0 (
+        .clk (clk),
+        .rst_n (rst_n),
+        .key_in (key_in0),
+        .key_out (key0)
+    );
+
+    disp_driver disp_driver_instance (
+        .clk (clk),
+        .rst_n (rst_n),
+        .seg (seg),
+        .sel (sel),
+        .shcp (shcp),
+        .stcp (stcp),
+        .ds (ds),
+        .oe (oe)
+    );
+
+    always @ (posedge clk or negedge rst_n) begin
+        if (rst_n == 1'b0) begin
+            cnt3 <= 4'd0;
+            cnt2 <= 4'd0;
+            cnt1 <= 4'd0;
+            cnt0 <= 4'd0;
+        end else begin
+            cnt3 <= key3 == 1'b0 ? cnt3 + 1'b1 : cnt3;
+            cnt2 <= key2 == 1'b0 ? cnt2 + 1'b1 : cnt2;
+            cnt1 <= key1 == 1'b0 ? cnt1 + 1'b1 : cnt1;
+            cnt0 <= key0 == 1'b0 ? cnt0 + 1'b1 : cnt0;
+        end
+    end
+
+    always @ (posedge clk or negedge rst_n) begin
+        if (rst_n == 1'b0)
+            data <= { E, E, E, E, E, E };
+        else begin
+            case (cnt0)
+                4'd0: data[7:0] <= N0;
+                4'd1: data[7:0] <= N1;
+                4'd2: data[7:0] <= N2;
+                4'd3: data[7:0] <= N3;
+                4'd4: data[7:0] <= N4;
+                4'd5: data[7:0] <= N5;
+                4'd6: data[7:0] <= N6;
+                4'd7: data[7:0] <= N7;
+                4'd8: data[7:0] <= N8;
+                4'd9: data[7:0] <= N9;
+                default: data[7:0] <= E;
+            endcase
+            case (cnt1)
+                4'd0: data[15:8] <= N0;
+                4'd1: data[15:8] <= N1;
+                4'd2: data[15:8] <= N2;
+                4'd3: data[15:8] <= N3;
+                4'd4: data[15:8] <= N4;
+                4'd5: data[15:8] <= N5;
+                4'd6: data[15:8] <= N6;
+                4'd7: data[15:8] <= N7;
+                4'd8: data[15:8] <= N8;
+                4'd9: data[15:8] <= N9;
+                default: data[15:8] <= E;
+            endcase
+            case (cnt2)
+                4'd0: data[23:16] <= N0;
+                4'd1: data[23:16] <= N1;
+                4'd2: data[23:16] <= N2;
+                4'd3: data[23:16] <= N3;
+                4'd4: data[23:16] <= N4;
+                4'd5: data[23:16] <= N5;
+                4'd6: data[23:16] <= N6;
+                4'd7: data[23:16] <= N7;
+                4'd8: data[23:16] <= N8;
+                4'd9: data[23:16] <= N9;
+                default: data[23:16] <= E;
+            endcase
+            case (cnt3)
+                4'd0: data[31:24] <= N0;
+                4'd1: data[31:24] <= N1;
+                4'd2: data[31:24] <= N2;
+                4'd3: data[31:24] <= N3;
+                4'd4: data[31:24] <= N4;
+                4'd5: data[31:24] <= N5;
+                4'd6: data[31:24] <= N6;
+                4'd7: data[31:24] <= N7;
+                4'd8: data[31:24] <= N8;
+                4'd9: data[31:24] <= N9;
+                default: data[31:24] <= E;
+            endcase
+            data[47:32] <= { E, E };
+        end
+    end
+
+    always @ (posedge clk or negedge rst_n) begin
+        if (rst_n == 1'b0) begin
+            cnt16 <= 16'b0;
+            sel <= 6'b000_001;
+        end else begin
+            cnt16 <= cnt16 + 16'b1;
+            if (cnt16 == 16'hffff) begin
+                case (sel)
+                    6'b000_001: begin
+                        sel <= 6'b000_010;
+                        seg <= data[15:8];
+                    end
+                    6'b000_010: begin
+                        sel <= 6'b000_100;
+                        seg <= data[23:16];
+                    end
+                    6'b000_100: begin
+                        sel <= 6'b001_000;
+                        seg <= data[31:24];
+                    end
+                    6'b001_000: begin
+                        sel <= 6'b010_000;
+                        seg <= data[39:32];
+                    end
+                    6'b010_000: begin
+                        sel <= 6'b100_000;
+                        seg <= data[47:40];
+                    end
+                    default: begin
+                        sel <= 6'b000_001;
+                        seg <= data[7:0];
+                    end
+                endcase
+            end
+        end
+    end
+
+endmodule
