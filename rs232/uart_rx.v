@@ -10,6 +10,7 @@ module uart_rx #(
     input wire rst_n,
     input wire in_data,
     output wire [7:0] out_data,
+    output wire out_parity,
     output reg out_en
 );
 
@@ -23,9 +24,11 @@ module uart_rx #(
     reg [12:0] cnt;
     reg [4:0] bps_cnt; // count for 0, 1, 2, ..., 15, 16, 17
     reg [7:0] data;
+    reg parity;
     reg [2:0] rx_detect;
 
     assign out_data = out_en == 1'b1 ? data : 8'd0;
+    assign out_parity = out_en == 1'b1 ? parity : 8'd0;
 
     always @ (posedge clk or negedge rst_n) begin
         rx_detect[0] <= in_data;
@@ -36,10 +39,12 @@ module uart_rx #(
             cnt <= CNT_0;
             bps_cnt <= 5'd0;
             data <= 8'd0;
+            parity <= 1'b0;
             out_en <= 1'b0;
         end else begin
             if (status == IDLE) begin
                 data <= 8'd0;
+                parity <= 1'b0;
                 out_en <= 1'b0;
                 cnt <= CNT_0;
                 if (rx_detect[2:1] == 2'b10) begin
@@ -60,14 +65,12 @@ module uart_rx #(
                             // start 0 sample point:
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= data;
                             out_en <= 1'b0;
                         end
-                        5'd2, 5'd4, 5'd6, 5'd8, 5'd10, 5'd12, 5'd14, 5'd16, 5'd18: begin
+                        5'd2, 5'd4, 5'd6, 5'd8, 5'd10, 5'd12, 5'd14, 5'd16, 5'd18, 5'd20: begin
                             // ignore sampling near at edge:
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data <= data;
                             out_en <= 1'b0;
                         end
                         5'd3: begin
@@ -119,6 +122,13 @@ module uart_rx #(
                             out_en <= 1'b0;
                         end
                         5'd19: begin
+                            // parity sample point:
+                            bps_cnt <= bps_cnt + 1'b1;
+                            status <= RECEIVING;
+                            parity <= in_data;
+                            out_en <= 1'b0;
+                        end
+                        5'd21: begin
                             // end 1 sample point:
                             bps_cnt <= 4'd0;
                             status <= IDLE;

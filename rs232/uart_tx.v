@@ -24,6 +24,7 @@ module uart_tx #(
     reg [3:0] bps_cnt; // count for 0, 1, 2, ..., 7, 8
     reg [12:0] cnt;
     reg [7:0] data;
+    reg parity;
 
     assign out_en = status;
 
@@ -33,6 +34,7 @@ module uart_tx #(
             bps_cnt <= 4'd0;
             cnt <= CNT_0;
             data <= 8'b0;
+            parity <= 1'b0;
             out_data <= 1'b1;
         end else begin
             if (status == IDLE) begin
@@ -42,6 +44,7 @@ module uart_tx #(
                     bps_cnt <= 4'd1;
                     cnt <= CNT_MAX;
                     data <= in_data;
+                    parity <= ^in_data;
                     out_data <= 1'b1;
                 end else begin
                     // keep IDLE status:
@@ -49,6 +52,7 @@ module uart_tx #(
                     bps_cnt <= 4'd0;
                     cnt <= CNT_0;
                     data <= 8'b0;
+                    parity <= 1'b0;
                     out_data <= 1'b1;
                 end
             end else begin
@@ -104,12 +108,18 @@ module uart_tx #(
                             status <= TRANSFER;
                         end
                         4'd10: begin
+                            // odd parity:
+                            out_data <= parity;
+                            bps_cnt <= bps_cnt + 1'b1;
+                            status <= TRANSFER;
+                        end
+                        4'd11: begin
                             // end 1:
                             out_data <= 1'b1;
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= TRANSFER;
                         end
-                        4'd11: begin
+                        4'd12: begin
                             // done:
                             out_data <= 1'b1;
                             bps_cnt <= 4'd0;

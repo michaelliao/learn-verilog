@@ -43,6 +43,9 @@ module tb_uart_rx ();
         #40
         in_data = 1'b0;
         #40
+        // parity:
+        in_data = 1'b1;
+        #40
         // end 1:
         in_data = 1'b1;
         #40
@@ -66,6 +69,9 @@ module tb_uart_rx ();
         in_data = 1'b0;
         #40
         in_data = 1'b1;
+        #40
+        // parity:
+        in_data = 1'b0;
         #40
         // end 1:
         in_data = 1'b1;

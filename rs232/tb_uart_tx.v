@@ -28,10 +28,16 @@ module tb_uart_tx ();
         #10
         in_en = 1'b1;
         in_data = 8'b0011_0001;
-        #10
+        #2
         in_en = 1'b0;
         in_data = 8'b0;
-        #3000
+        #250
+        in_en = 1'b1;
+        in_data = 8'b1001_0101;
+        #2
+        in_en = 1'b0;
+        in_data = 8'b0;
+        #250
         $finish;
     end
 
