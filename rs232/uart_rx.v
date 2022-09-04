@@ -28,7 +28,7 @@ module uart_rx #(
     reg [2:0] rx_detect;
 
     assign out_data = out_en == 1'b1 ? data : 8'd0;
-    assign out_parity = out_en == 1'b1 ? parity : 8'd0;
+    assign out_parity = out_en == 1'b1 ? parity : 1'b0;
 
     always @ (posedge clk or negedge rst_n) begin
         rx_detect[0] <= in_data;
@@ -130,7 +130,7 @@ module uart_rx #(
                         end
                         5'd21: begin
                             // end 1 sample point:
-                            bps_cnt <= 4'd0;
+                            bps_cnt <= 5'd0;
                             status <= IDLE;
                             data <= data;
                             out_en <= 1'b1;
