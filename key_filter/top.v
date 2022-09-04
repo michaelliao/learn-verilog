@@ -84,10 +84,10 @@ module top (
             cnt1 <= 4'd0;
             cnt0 <= 4'd0;
         end else begin
-            cnt3 <= key3 == 1'b0 ? cnt3 + 1'b1 : cnt3;
-            cnt2 <= key2 == 1'b0 ? cnt2 + 1'b1 : cnt2;
-            cnt1 <= key1 == 1'b0 ? cnt1 + 1'b1 : cnt1;
-            cnt0 <= key0 == 1'b0 ? cnt0 + 1'b1 : cnt0;
+            cnt3 <= key3 == 1'b0 ? (cnt3 == 4'd9 ? 4'd0 : cnt3 + 1'b1) : cnt3;
+            cnt2 <= key2 == 1'b0 ? (cnt2 == 4'd9 ? 4'd0 : cnt2 + 1'b1) : cnt2;
+            cnt1 <= key1 == 1'b0 ? (cnt1 == 4'd9 ? 4'd0 : cnt1 + 1'b1) : cnt1;
+            cnt0 <= key0 == 1'b0 ? (cnt0 == 4'd9 ? 4'd0 : cnt0 + 1'b1) : cnt0;
         end
     end
 
