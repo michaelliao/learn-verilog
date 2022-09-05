@@ -2,8 +2,8 @@
 // Baud = 9600, 14400, 19200, 38400, 57600, 115200
 
 module uart_rx #(
-    parameter BAUD = 9600, // default to 9600
-    parameter SYS_CLK = 50_000_000 // default to 50MHz
+    parameter BAUD = 'd9600, // default to 9600
+    parameter SYS_CLK = 'd50_000_000 // default to 50MHz
 )
 (
     input wire clk,
@@ -14,7 +14,7 @@ module uart_rx #(
     output reg out_en
 );
 
-    parameter [12:0] CNT_0 = 0;
+    parameter [12:0] CNT_0 = 'd0;
     parameter [12:0] CNT_MAX = SYS_CLK / BAUD / 2 - 1;
 
     parameter IDLE = 1'b0,
