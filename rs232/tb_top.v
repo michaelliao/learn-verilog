@@ -5,14 +5,27 @@ module tb_top ();
     reg clk;
     reg rst_n;
     reg in_data;
+
+    wire [7:0] data;
+    wire data_en;
+
     wire out_data;
     wire out_en;
 
-    loopback component (
+    uart_rx rx_component (
         .clk (clk),
         .rst_n (rst_n),
         .in_data (in_data),
         .out_data (data),
+        .out_en (data_en)
+    );
+
+    uart_tx tx_component (
+        .clk (clk),
+        .rst_n (rst_n),
+        .in_data (data),
+        .in_en (data_en),
+        .out_data (out_data),
         .out_en (out_en)
     );
 
@@ -84,6 +97,7 @@ module tb_top ();
 
     initial begin
         $dumpfile("tb_top.vcd");
-        $dumpvars(0, component);
+        $dumpvars(0, rx_component);
+        $dumpvars(1, tx_component);
     end
 endmodule
