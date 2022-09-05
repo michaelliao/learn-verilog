@@ -76,59 +76,17 @@ module uart_rx #(
                             status <= RECEIVING;
                             out_en <= 1'b0;
                         end
-                        5'd3: begin
+                        5'd3, 5'd5, 5'd7, 5'd9, 5'd11, 5'd13, 5'd15, 5'd17: begin
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            data[0] <= in_data;
-                            out_en <= 1'b0;
-                        end
-                        5'd5: begin
-                            bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            data[1] <= in_data;
-                            out_en <= 1'b0;
-                        end
-                        5'd7: begin
-                            bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            data[2] <= in_data;
-                            out_en <= 1'b0;
-                        end
-                        5'd9: begin
-                            bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            data[3] <= in_data;
-                            out_en <= 1'b0;
-                        end
-                        5'd11: begin
-                            bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            data[4] <= in_data;
-                            out_en <= 1'b0;
-                        end
-                        5'd13: begin
-                            bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            data[5] <= in_data;
-                            out_en <= 1'b0;
-                        end
-                        5'd15: begin
-                            bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            data[6] <= in_data;
-                            out_en <= 1'b0;
-                        end
-                        5'd17: begin
-                            bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            data[7] <= in_data;
+                            data <= { rx_detect[2], data[7:1] };
                             out_en <= 1'b0;
                         end
                         5'd19: begin
                             // parity sample point:
                             bps_cnt <= bps_cnt + 1'b1;
                             status <= RECEIVING;
-                            parity <= in_data;
+                            parity <= rx_detect[2];
                             out_en <= 1'b0;
                         end
                         5'd21: begin
