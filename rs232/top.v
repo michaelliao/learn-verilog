@@ -11,7 +11,7 @@ module top (
 );
 
     wire [7:0] data;
-	 wire data_en;
+    wire data_en;
 
     wire out_en;
 
@@ -29,15 +29,14 @@ module top (
         .out_en (data_en)
     );
 
-	 uart_tx tx_instance (
+     uart_tx tx_instance (
         .clk (clk),
-		  .rst_n (rst_n),
-		  .in_data (data),
-		  .in_en (data_en),
-		  .out_data (out_data),
-		  .out_en (out_en)
-		  
-	 );
+        .rst_n (rst_n),
+        .in_data (data),
+        .in_en (data_en),
+        .out_data (out_data),
+        .out_en (out_en)
+     );
 
     always @ (posedge clk or negedge rst_n) begin
         if (rst_n == 1'b0) begin
