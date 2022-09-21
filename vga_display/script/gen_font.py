@@ -3,6 +3,7 @@
 ' convert font png to binary '
 
 from PIL import Image
+from mif import gen_mif
 
 CHAR_START = 0
 CHAR_WIDTH = 8
@@ -14,24 +15,17 @@ def get_char(im, row, col):
     x_end = x_start + CHAR_WIDTH
     y_start = CHAR_HEIGHT * row
     y_end = y_start + CHAR_HEIGHT
-    s = ''
+    bs = b''
     for y in range(y_start, y_end):
-        b = 0
+        s = ''
         for x in range(x_start, x_end):
             p = im.getpixel((x, y))
             bit = '1' if p > 0 else '0'
             s = s + bit
-    return s
-
-
-def add_data(lines, addr, bits):
-    parts = len(bits) // 8
-    line = '%04x :' % addr
-    for part in range(parts):
-        offset = part * 8
-        line = '%04x : %s;' % (addr, bits[offset: offset + 8])
-        lines.append(line)
-        addr = addr + 1
+        n = int(s, base=2)
+        b = n.to_bytes(1, 'big')
+        bs = bs + b
+    return bs
 
 
 def main():
@@ -50,20 +44,16 @@ def main():
 
     addr = 0
     char = CHAR_START
-    data = ['-- 8x16 font bitmap data', 'WIDTH = 8;',
-            f'DEPTH = {width*height//8};', 'ADDRESS_RADIX = HEX;', 'DATA_RADIX = BIN;', 'CONTENT', 'BEGIN']
+    data = b''
     for row in range(0, h_count):
         for col in range(0, w_count):
-            bits = get_char(im, row, col)
-            print(f'{chr(char)} at row {row}, col {col}: ' + bits)
-            add_data(data, addr, bits)
-            char = char + 1
-            addr = addr + len(bits) // 8
+            bs = get_char(im, row, col)
+            data = data + bs
+    mif_str = gen_mif(data, width=8, format='bin')
 
-    data.append('END;')
     print(f'writing mif...')
     with open('../font.mif', 'w') as f:
-        f.write('\n'.join(data))
+        f.write(mif_str)
     print('ok')
 
 

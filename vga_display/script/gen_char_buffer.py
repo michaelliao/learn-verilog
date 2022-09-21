@@ -2,6 +2,9 @@
 
 ' convert text to RAM init data '
 
+from mif import gen_mif
+
+
 COLS = 80
 ROWS = 25
 
@@ -32,22 +35,22 @@ def color_of_char(x, y, ch):
             fg = YELLOW
         else:
             fg = RED
-    return '%x%x' % (bg, fg)
+    bgfg = bg * 16 + fg
+    return bgfg.to_bytes(1, 'big')
 
 
-def add_line(data, y, line):
+def line_to_data(y, line):
     chars = len(line)
     if chars > COLS:
         print(f'Error: line {y+1} has too many chars: {chars}')
         exit(1)
     while len(line) < COLS:
         line = line + ' '
-    addr = COLS * y
+    bs = b''
     for x, ch in enumerate(line):
-        s = '%04x : %s%02x;' % (addr, color_of_char(x, y, ch), ord(ch))
-        print(f'{s}')
-        data.append(s)
-        addr = addr + 1
+        bs = bs + color_of_char(x, y, ch) + ord(ch).to_bytes(1, 'big')
+    return bs
+
 
 def main():
     with open('../font/init-screen.txt', 'r') as f:
@@ -57,16 +60,14 @@ def main():
         exit(1)
     while len(lines) < ROWS:
         lines.append('')
-    data = ['-- 80 x 25 character buffer data', 'WIDTH = 16;',
-            f'DEPTH = {COLS*ROWS};', 'ADDRESS_RADIX = HEX;', 'DATA_RADIX = HEX;', 'CONTENT', 'BEGIN']
-    n = 0
-    for line in lines:
-        add_line(data, n, line.rstrip())
-        n = n + 1
-    data.append('END;')
+    data = b''
+    for y, line in enumerate(lines):
+        data = data + line_to_data(y, line.rstrip())
+    mif_str = gen_mif(data, width=16)
+
     print(f'writing mif...')
     with open('../char-buffer.mif', 'w') as f:
-        f.write('\n'.join(data))
+        f.write(mif_str)
     print('ok')
 
 
