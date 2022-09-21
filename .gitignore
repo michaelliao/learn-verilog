@@ -13,6 +13,8 @@
 *.lo
 *.o
 *.obj
+*.pyc
+*.pyo
 
 # Precompiled Headers
 *.gch
