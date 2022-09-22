@@ -3,22 +3,22 @@
 ' generate MIF from binary data '
 
 
-def to_hex(b):
+def _to_hex(b):
     return '%02x' % b
 
 
-def to_binary(b):
+def _to_binary(b):
     s = bin(b)[2:]
     while len(s) < 8:
         s = '0' + s
     return s
 
 
-def gen_line(addr, max_addr, bs, format):
+def _gen_line(addr, max_addr, bs, format):
     n_chars = len(hex(max_addr-1)) - 2
     s = f'%0{n_chars}x : ' % addr
     for b in bs:
-        b2s = to_hex(b) if format == 'hex' else to_binary(b)
+        b2s = _to_hex(b) if format == 'hex' else _to_binary(b)
         s = s + b2s
     s = s + ';'
     return s
@@ -48,7 +48,7 @@ def gen_mif(data, width=8, format='hex'):
              f'DEPTH = {max_addr};', 'ADDRESS_RADIX = HEX;', f'DATA_RADIX = {format.upper()};', 'CONTENT', 'BEGIN']
     for addr in range(max_addr):
         sub_data = data[addr * n_bytes: (addr+1)*n_bytes]
-        line = gen_line(addr, max_addr, sub_data, format)
+        line = _gen_line(addr, max_addr, sub_data, format)
         lines.append(line)
     lines.append('END;')
     return '\n'.join(lines)
