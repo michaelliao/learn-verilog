@@ -13,7 +13,7 @@ module fsm2
               S3 = 2'b10,
               S4 = 2'b11;
 
-    // current state, next state:
+    // current state:
     reg [1:0] cs;
 
     always @ (posedge clk or negedge rst_n) begin
