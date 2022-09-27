@@ -5,7 +5,7 @@ module fsm2
     input clk,
     input rst_n,
     input key_in,
-    output [1:0] out
+    output reg [1:0] out
 );
 
     parameter S1 = 2'b00,
@@ -17,8 +17,6 @@ module fsm2
     reg [1:0] cs;
     reg [1:0] ns;
 
-    assign out = cs;
-
     always @ (posedge clk or negedge rst_n) begin
         if (! rst_n)
             cs <= S1;
@@ -29,30 +27,43 @@ module fsm2
     always @ (*) begin
         case (cs)
             S1: begin
-                if (! key_in)
+                if (!key_in)
                     ns = S2;
                 else
-                    ns = S1;
+                    ns = cs;
             end
             S2: begin
-                if (! key_in)
+                if (!key_in)
                     ns = S3;
                 else
-                    ns = S2;
+                    ns = cs;
             end
             S3: begin
-                if (! key_in)
+                if (!key_in)
                     ns = S4;
                 else
-                    ns = S3;
+                    ns = cs;
             end
             S4: begin
-                if (! key_in)
+                if (!key_in)
                     ns = S1;
                 else
-                    ns = S4;
+                    ns = cs;
             end
             default: ns = S1;
         endcase
+    end
+
+    always @ (posedge clk or negedge rst_n) begin
+        if (! rst_n)
+            out <= S1;
+        else
+            case (cs)
+                S1: out <= S1;
+                S2: out <= S2;
+                S3: out <= S3;
+                S4: out <= S4;
+                default: out <= S1;
+            endcase
     end
 endmodule

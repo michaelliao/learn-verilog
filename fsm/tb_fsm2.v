@@ -13,27 +13,27 @@ module tb_fsm2();
         key_in = 1'b1;
         #100
         rst_n = 1'b1;
-        #100
+        #90
         key_in = 1'b0;
-        #10
+        #20
         key_in = 1'b1;
-        #100
+        #80
         key_in = 1'b0;
-        #10
+        #20
         key_in = 1'b1;
-        #100
+        #80
         key_in = 1'b0;
-        #10
+        #20
         key_in = 1'b1;
-        #100
+        #80
         key_in = 1'b0;
-        #10
+        #20
         key_in = 1'b1;
-        #100
+        #80
         key_in = 1'b0;
-        #10
+        #20
         key_in = 1'b1;
-        #100
+        #80
         $finish;
     end
 
