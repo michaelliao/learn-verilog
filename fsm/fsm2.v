@@ -15,45 +15,37 @@ module fsm2
 
     // current state, next state:
     reg [1:0] cs;
-    reg [1:0] ns;
 
     always @ (posedge clk or negedge rst_n) begin
         if (! rst_n)
             cs <= S1;
-        else
-            cs <= ns;
-    end
-
-    always @ (posedge clk or negedge rst_n) begin
-        if (! rst_n)
-            ns <= S1;
         else begin
             case (cs)
                 S1: begin
                     if (!key_in)
-                        ns = S2;
+                        cs <= S2;
                     else
-                        ns = ns;
+                        cs <= cs;
                 end
                 S2: begin
                     if (!key_in)
-                        ns = S3;
+                        cs <= S3;
                     else
-                        ns = ns;
+                        cs <= cs;
                 end
                 S3: begin
                     if (!key_in)
-                        ns = S4;
+                        cs <= S4;
                     else
-                        ns = ns;
+                        cs <= cs;
                 end
                 S4: begin
                     if (!key_in)
-                        ns = S1;
+                        cs <= S1;
                     else
-                        ns = ns;
+                        cs <= cs;
                 end
-                default: ns = S1;
+                default: cs <= S1;
             endcase
         end
     end
