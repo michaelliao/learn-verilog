@@ -24,34 +24,38 @@ module fsm2
             cs <= ns;
     end
 
-    always @ (*) begin
-        case (cs)
-            S1: begin
-                if (!key_in)
-                    ns = S2;
-                else
-                    ns = cs;
-            end
-            S2: begin
-                if (!key_in)
-                    ns = S3;
-                else
-                    ns = cs;
-            end
-            S3: begin
-                if (!key_in)
-                    ns = S4;
-                else
-                    ns = cs;
-            end
-            S4: begin
-                if (!key_in)
-                    ns = S1;
-                else
-                    ns = cs;
-            end
-            default: ns = S1;
-        endcase
+    always @ (posedge clk or negedge rst_n) begin
+        if (! rst_n)
+            ns <= S1;
+        else begin
+            case (cs)
+                S1: begin
+                    if (!key_in)
+                        ns = S2;
+                    else
+                        ns = ns;
+                end
+                S2: begin
+                    if (!key_in)
+                        ns = S3;
+                    else
+                        ns = ns;
+                end
+                S3: begin
+                    if (!key_in)
+                        ns = S4;
+                    else
+                        ns = ns;
+                end
+                S4: begin
+                    if (!key_in)
+                        ns = S1;
+                    else
+                        ns = ns;
+                end
+                default: ns = S1;
+            endcase
+        end
     end
 
     always @ (posedge clk or negedge rst_n) begin
