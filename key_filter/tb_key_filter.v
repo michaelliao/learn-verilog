@@ -44,7 +44,7 @@ module tb_key_filter ();
         key_in = 1'b0;
         #4
         key_in = 1'b1;
-        #500    
+        #500
         $finish;
     end
 
