@@ -8,11 +8,10 @@ module fsm2
     output [1:0] out
 );
 
-    parameter
-        S1 = 2'b00,
-        S2 = 2'b01,
-        S3 = 2'b10,
-        S4 = 2'b11;
+    parameter S1 = 2'b00,
+              S2 = 2'b01,
+              S3 = 2'b10,
+              S4 = 2'b11;
 
     // current state, next state:
     reg [1:0] cs;
@@ -30,24 +29,30 @@ module fsm2
     always @ (*) begin
         case (cs)
             S1: begin
-                if (!key_in)
+                if (! key_in)
                     ns = S2;
-            end
-            S2: begin
-                if (!key_in)
-                    ns = S3;
-            end
-            S3: begin
-                if (!key_in)
-                    ns = S4;
-            end
-            S4: begin
-                if (!key_in)
+                else
                     ns = S1;
             end
-            default: begin
-                ns = S1;
+            S2: begin
+                if (! key_in)
+                    ns = S3;
+                else
+                    ns = S2;
             end
+            S3: begin
+                if (! key_in)
+                    ns = S4;
+                else
+                    ns = S3;
+            end
+            S4: begin
+                if (! key_in)
+                    ns = S1;
+                else
+                    ns = S4;
+            end
+            default: ns = S1;
         endcase
     end
 endmodule

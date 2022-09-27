@@ -16,10 +16,11 @@ module top (
     parameter L = 8'b11100011;
     parameter O = 8'b00000011;
     parameter P = 8'b00110001;
+    parameter S = 8'b01001001;
     parameter U = 8'b10000011;
 
     wire key1;
-    reg [1:0] state;
+    wire [1:0] state;
     reg [47:0] data;
 
     fsm2 fsm2_inst (
@@ -34,6 +35,16 @@ module top (
         .rst_n (rst_n),
         .key_in (key_in),
         .key_out (key1)
+    );
+
+	 words words_inst (
+        .clk (clk),
+        .rst_n (rst_n),
+        .data_in (data),
+        .shcp (shcp),
+        .stcp (stcp),
+        .ds (ds),
+        .oe (oe)
     );
 
     always @ (posedge clk or negedge rst_n) begin
