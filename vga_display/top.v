@@ -117,6 +117,7 @@ module top(
         .clk (vga_clk),
         .rst_n (vga_rst_n),
         .in_rgb (pix_rgb),
+        .pix_data_req (pix_data_req),
         .pix_x (pix_x),
         .pix_y (pix_y),
         .hsync (hsync),
@@ -125,6 +126,7 @@ module top(
     );
 
     pixel_to_char pixel_to_char_inst (
+        .pix_req (pix_data_req),
         .pix_x (pix_x),
         .pix_y (pix_y),
         .char_valid (char_valid),

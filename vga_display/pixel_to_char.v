@@ -1,11 +1,12 @@
 module pixel_to_char (
+    input pix_req,
     // pixel x of screen: 0 ~ 639:
     input [9:0] pix_x,
     // pixel y of screen: 0 ~ 479:
     input [9:0] pix_y,
 
-	 // is char valid:
-	 output reg char_valid,
+	// is char valid:
+    output reg char_valid,
     // char index: 0 ~ 1999:
     output wire [10:0] char_index,
     // pixel x of char: 0 ~ 7:
@@ -21,7 +22,7 @@ module pixel_to_char (
     reg [10:0] col;
 
     always @ (*) begin
-        if (pix_y >= PIX_Y_START && pix_y < PIX_Y_END) begin
+        if (pix_req && pix_y >= PIX_Y_START && pix_y < PIX_Y_END) begin
             char_valid = 1'b1;
             row = (pix_y - PIX_Y_START) >> 4;
             col = pix_x >> 3;

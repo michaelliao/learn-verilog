@@ -1,7 +1,7 @@
 `timescale 1ns/1ns
 
 module tb_pixel_to_char ();
-
+    reg pix_req;
     reg [9:0] pix_x;
     reg [9:0] pix_y;
     reg [31:0] cnt;
@@ -12,6 +12,7 @@ module tb_pixel_to_char ();
     );
 
     initial begin
+        pix_req = 1'b1;
         pix_x = 10'b0;
         pix_y = 10'b0;
         cnt = 32'b0;
