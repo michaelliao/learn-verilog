@@ -1,9 +1,10 @@
 
 module pixel_index_color (
-    input wire [7:0] font_line_data,
-    input wire [2:0] char_pix_x,
-    input wire [7:0] bg_fg_index,
-    output wire [3:0] color_index
+    input valid,
+    input [7:0] font_line_data,
+    input [2:0] char_pix_x,
+    input [7:0] bg_fg_index,
+    output [3:0] color_index
 );
     reg pix;
 
@@ -21,6 +22,6 @@ module pixel_index_color (
     end
 
     // if pix is 1, return fg color index, otherwise bg color:
-    assign color_index = pix == 1'b1 ? bg_fg_index[3:0] : bg_fg_index[7:4];
+    assign color_index = valid ? (pix == 1'b1 ? bg_fg_index[3:0] : bg_fg_index[7:4]) : 4'd0;
 
 endmodule
