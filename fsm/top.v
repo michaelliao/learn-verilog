@@ -23,7 +23,7 @@ module top (
     wire [1:0] state;
     reg [47:0] data;
 
-    fsm2 fsm2_inst (
+    fsm fsm_inst (
         .clk (clk),
         .rst_n (rst_n),
         .key_in (key1),

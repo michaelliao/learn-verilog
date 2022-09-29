@@ -1,6 +1,6 @@
-// fsm2
+// fsm
 
-module fsm2
+module fsm
 (
     input clk,
     input rst_n,

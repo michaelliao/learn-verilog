@@ -1,6 +1,6 @@
 `timescale 1ns/1ns
 
-module tb_fsm2();
+module tb_fsm();
 
     reg clk;
     reg rst_n;
@@ -39,7 +39,7 @@ module tb_fsm2();
 
     always #10 clk = ~clk;
 
-    fsm2 component (
+    fsm component (
         .clk (clk),
         .rst_n (rst_n),
         .key_in (key_in),
@@ -47,7 +47,7 @@ module tb_fsm2();
     );
 
     initial begin
-        $dumpfile("tb_fsm2.vcd");
+        $dumpfile("tb_fsm.vcd");
         $dumpvars(0, component);
     end
 endmodule
