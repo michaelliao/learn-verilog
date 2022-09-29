@@ -16,12 +16,12 @@ module vga_data (
 `define GRAY   16'hd69a
 `define WHITE  16'hffff
 
-`define H_SIZE 10'd640
-`define V_SIZE 10'd480
-
     always @ (posedge clk or negedge rst_n) begin
         if (rst_n == 1'b0)
             pix_rgb <= `BLACK;
+        // border:
+        else if (pix_x == 0 || pix_y == 0 || pix_x == 639 || pix_y == 479)
+            pix_rgb <= `GREEN;
         // (120, 100) - (220, 180)
         else if (pix_x >= 120 && pix_x < 220 && pix_y >= 100 && pix_y < 180)
             pix_rgb <= `RED;

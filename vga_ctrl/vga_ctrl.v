@@ -13,7 +13,10 @@ VGA Timings: http://martin.hinner.info/vga/timing.html
 
 ***********************************************************************************************/
 
-module vga_ctrl (
+module vga_ctrl #(
+    parameter PIX_REQ_OFFSET = 1 // default to 1
+)
+(
     input  wire clk,
     input  wire rst_n,
     input  wire [15:0] in_rgb,
@@ -48,48 +51,49 @@ parameter H_SYNC  = 10'd96,
     wire pix_valid;
 
     always @ (posedge clk or negedge rst_n) begin
-        if (rst_n == 1'b0)
+        if (! rst_n)
             cnt_h <= `DATA_0;
-        else if (cnt_h == H_TOTAL - 1'b1)
+        else if (cnt_h == H_TOTAL - 1)
             cnt_h <= `DATA_0;
         else
-            cnt_h <= cnt_h + 1'b1;
+            cnt_h <= cnt_h + 1;
     end
 
     always @ (posedge clk or negedge rst_n) begin
-        if (rst_n == 1'b0)
+        if (! rst_n)
             cnt_v <= `DATA_0;
-        else if (cnt_h == H_TOTAL - 1'b1)
-            begin
-				if (cnt_v == V_TOTAL - 1'b1)
+        else begin
+            if (cnt_h == H_TOTAL - 1) begin
+				if (cnt_v == V_TOTAL - 1)
 					cnt_v <= `DATA_0;
-				else
-					cnt_v <= cnt_v + 1'b1;
+                else
+					cnt_v <= cnt_v + 1;
+            end else begin
+                cnt_v <= cnt_v;
             end
-        else
-            cnt_v <= cnt_v;
+        end
     end
 
-    assign pix_valid = rst_n 
+    assign pix_valid = rst_n
 			&& (cnt_h >= (H_SYNC + H_BACK))
             && (cnt_h < (H_SYNC + H_BACK + H_SIZE))
             && (cnt_v >= (V_SYNC + V_BACK))
             && (cnt_v < (V_SYNC + V_BACK + V_SIZE))
             ? 1'b1 : 1'b0;
 
-    assign pix_data_req = rst_n 
-			&& (cnt_h >= (H_SYNC + H_BACK - 1))
-            && (cnt_h < (H_SYNC + H_BACK + H_SIZE - 1))
-            && (cnt_v >= (V_SYNC + V_BACK - 1))
-            && (cnt_v < (V_SYNC + V_BACK + V_SIZE - 1))
+    assign pix_data_req = rst_n
+			&& (cnt_h >= (H_SYNC + H_BACK - PIX_REQ_OFFSET))
+            && (cnt_h < (H_SYNC + H_BACK + H_SIZE - PIX_REQ_OFFSET))
+            && (cnt_v >= (V_SYNC + V_BACK))
+            && (cnt_v < (V_SYNC + V_BACK + V_SIZE))
             ? 1'b1 : 1'b0;
 
-    assign pix_x = pix_data_req == 1'b1 ? (cnt_h - (H_SYNC + H_BACK - 1)) : 10'h000;
-    assign pix_y = pix_data_req == 1'b1 ? (cnt_v - (V_SYNC + V_BACK - 1)) : 10'h000;
+    assign pix_x = pix_data_req == 1'b1 ? (cnt_h - (H_SYNC + H_BACK - PIX_REQ_OFFSET)) : `DATA_0;
+    assign pix_y = pix_data_req == 1'b1 ? (cnt_v - (V_SYNC + V_BACK)) : `DATA_0;
 
-    assign hsync = rst_n & (cnt_h < H_SYNC ? 1'b1 : 1'b0);
+    assign hsync = cnt_h < H_SYNC ? 1'b1 : 1'b0;
 
-    assign vsync = rst_n & (cnt_v < V_SYNC ? 1'b1 : 1'b0);
+    assign vsync = cnt_v < V_SYNC ? 1'b1 : 1'b0;
 
     assign out_rgb = pix_valid == 1'b1 ? in_rgb : 16'h0000;
 
