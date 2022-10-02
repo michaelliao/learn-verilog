@@ -1,9 +1,9 @@
-// display words
+// digital tube display
 
-module disp_driver
+module digital_tube_display
 (
     input clk,
-    input rst,
+    input rst_n,
     input [7:0] seg,
     input [5:0] sel,
     output reg shcp,
@@ -20,7 +20,7 @@ module disp_driver
     assign data = {seg[7:0], sel[5:0]};
 
     always @ (posedge clk) begin
-        if (rst == 1'b0)
+        if (! rst_n)
             begin
                 cnt <= 2'b0;
                 cnt_bit <= 4'b0;
