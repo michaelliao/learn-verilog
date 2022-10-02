@@ -4,20 +4,20 @@ module tb_counter ();
 
     reg clk;
     reg rst_n;
-    wire [7:0] out;
+    wire [23:0] cnt;
 
-    counter counter_instance(
-        .clk(clk),
-        .rst_n(rst_n),
-        .out(out)
+    counter #(10, 50) component(
+        .clk (clk),
+        .rst_n (rst_n),
+        .cnt (cnt)
     );
 
     initial begin
         clk = 1'b1;
         rst_n = 1'b0;
-        #100
+        #10
         rst_n = 1'b1;
-        #10000
+        #20000
         $finish;
     end
 
@@ -25,7 +25,7 @@ module tb_counter ();
 
     initial begin
         $dumpfile("tb_counter.vcd");
-        $dumpvars(0, counter_instance);
+        $dumpvars(0, component);
     end
 
 endmodule
