@@ -13,7 +13,7 @@ module convert (
     localparam NUM_6 = 8'b01000001;
     localparam NUM_7 = 8'b00011111;
     localparam NUM_8 = 8'b00000001;
-    localparam NUM_9 = 8'b00000011;
+    localparam NUM_9 = 8'b00001001;
     localparam NUM_A = 8'b00010001;
     localparam NUM_B = 8'b11000001;
     localparam NUM_C = 8'b01100011;

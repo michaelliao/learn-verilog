@@ -8,10 +8,12 @@ module top (
     output wire ds,
     output wire oe
 );
-    reg [47:0] data;
+    wire [47:0] data;
+    wire [7:0] seg;
+    wire [5:0] sel;
     wire [23:0] cnt;
 
-    counter #(10) counter_inst(
+    counter #(10000) counter_inst(
         .clk (clk),
         .rst_n (rst_n),
         .cnt (cnt)
@@ -47,36 +49,23 @@ module top (
         .out (data[47:40])
     );
 
-	digital_tube_display digital_tube_display_inst (
+    digital_tube_data digital_tube_data_inst (
         .clk (clk),
         .rst_n (rst_n),
-        .data_in (data),
+        .data (data),
+        .seg (seg),
+        .sel (sel)
+    );
+
+    digital_tube_display digital_tube_display_inst (
+        .clk (clk),
+        .rst_n (rst_n),
+        .seg (seg),
+        .sel (sel),
         .shcp (shcp),
         .stcp (stcp),
         .ds (ds),
         .oe (oe)
     );
-
-    always @ (*) begin
-        case (cnt[7:0])
-            8'h0: data[7:0] = N0;
-        endcase
-    end
-
-    always @ (posedge clk or negedge rst_n) begin
-        if (! rst_n) begin
-            data <= { E, E, E, E, E, E };
-        end else begin
-            data <= {
-
-            }
-            case (state)
-                2'b00: data <= { C, H, O, O, S, E };
-                2'b01: data <= { E, P, O, C, H, S };
-                2'b10: data <= { P, U, L, S, E, S };
-                2'b11: data <= { S, C, H, O, O, L };
-            endcase
-        end
-    end
 
 endmodule
