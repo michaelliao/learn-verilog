@@ -1,11 +1,9 @@
 // display words
 
-
-
 module words
 (
     input clk,
-    input rst,
+    input rst_n,
     output shcp,
     output stcp,
     output ds,
@@ -31,63 +29,60 @@ module words
     reg [5:0] sel;
 
     always @ (posedge clk) begin
-        if (rst == 1'b0)
-            begin
-                cnt16 <= 16'b0;
-                cnt26 <= 26'b0;
-                sel <= 6'b000_001;
-            end
-        else
-            begin
-                cnt16 <= cnt16 + 16'b1;
-                cnt26 <= cnt26 + 26'b1;
-                if (cnt26[25] == 1'b1)
-                    data <= { H, E, L, L, O, X };
+        if (! rst_n) begin
+            cnt16 <= 16'b0;
+            cnt26 <= 26'b0;
+            sel <= 6'b000_001;
+        end else begin
+            cnt16 <= cnt16 + 16'b1;
+            cnt26 <= cnt26 + 26'b1;
+            if (cnt26[25] == 1'b1)
+                data <= { H, E, L, L, O, X };
+            else
+                data <= { X, H, E, L, L, O };
+            if (cnt16 == 16'hffff)
+                if (sel == 6'b000_001)
+                    begin
+                        sel <= 6'b000_010;
+                        seg <= data[15:8];
+                    end
+                else if (sel == 6'b000_010)
+                    begin
+                        sel <= 6'b000_100;
+                        seg <= data[23:16];
+                    end
+                else if (sel == 6'b000_100)
+                    begin
+                        sel <= 6'b001_000;
+                        seg <= data[31:24];
+                    end
+                else if (sel == 6'b001_000)
+                    begin
+                        sel <= 6'b010_000;
+                        seg <= data[39:32];
+                    end
+                else if (sel == 6'b010_000)
+                    begin
+                        sel <= 6'b100_000;
+                        seg <= data[47:40];
+                    end
                 else
-                    data <= { X, H, E, L, L, O };
-                if (cnt16 == 16'hffff)
-                    if (sel == 6'b000_001)
-                        begin
-                            sel <= 6'b000_010;
-                            seg <= data[15:8];
-                        end
-                    else if (sel == 6'b000_010)
-                        begin
-                            sel <= 6'b000_100;
-                            seg <= data[23:16];
-                        end
-                    else if (sel == 6'b000_100)
-                        begin
-                            sel <= 6'b001_000;
-                            seg <= data[31:24];
-                        end
-                    else if (sel == 6'b001_000)
-                        begin
-                            sel <= 6'b010_000;
-                            seg <= data[39:32];
-                        end
-                    else if (sel == 6'b010_000)
-                        begin
-                            sel <= 6'b100_000;
-                            seg <= data[47:40];
-                        end
-                    else
-                        begin
-                            sel <= 6'b000_001;
-                            seg <= data[7:0];
-                        end
-            end
+                    begin
+                        sel <= 6'b000_001;
+                        seg <= data[7:0];
+                    end
+        end
     end
 
-    disp_driver disp_driver_instance(
-        .clk(clk),
-        .rst(rst),
-        .seg(seg),
-        .sel(sel),
-        .shcp(shcp),
-        .stcp(stcp),
-        .ds(ds),
-        .oe(oe)
+    digital_tube_display digital_tube_display_inst(
+        .clk (clk),
+        .rst_n (rst_n),
+        .seg (seg),
+        .sel (sel),
+        .shcp (shcp),
+        .stcp (stcp),
+        .ds (ds),
+        .oe (oe)
     );
 
 endmodule

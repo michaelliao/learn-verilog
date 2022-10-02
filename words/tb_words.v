@@ -3,7 +3,7 @@
 module tb_words();
 
     reg clk;
-    reg rst;
+    reg rst_n;
     wire shcp;
     wire stcp;
     wire ds;
@@ -11,22 +11,27 @@ module tb_words();
 
     initial begin
         clk = 1'b1;
-        rst = 1'b0;
+        rst_n = 1'b0;
         #100
-        rst = 1'b1;
+        rst_n = 1'b1;
         #10000
-        $stop;
+        $finish;
     end
 
     always #10 clk = ~clk;
 
-    words ins(
+    words component(
         .clk(clk),
-        .rst(rst),
+        .rst_n(rst_n),
         .shcp(shcp),
         .stcp(stcp),
         .ds(ds),
         .oe(oe)
     );
+
+    initial begin
+        $dumpfile("tb_words.vcd");
+        $dumpvars(0, component);
+    end
 
 endmodule
