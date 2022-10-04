@@ -53,9 +53,7 @@ module sdram_write #(
                                (CAS_LATENCY == 2 ? 3'b010 :
                                (CAS_LATENCY == 3 ? 3'b011 : 3'b011));
 
-    localparam
-        CNT_0 = 4'b0,
-        CNT_1 = 4'b1;
+    localparam CNT_0 = 4'b0;
 
     localparam
         STATE_IDLE           = 3'b000,
