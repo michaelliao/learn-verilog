@@ -9,7 +9,7 @@ SDRAM initialization:
    Wait tRP = 20 ns
 
 3. Auto refresh
-   Command = AUTO_REFRESH
+   Command = AUTO_REF
    Wait tRFC = 70 ns
 
 4. Auto refresh (repeat 2 ~ 7)
@@ -152,7 +152,7 @@ module sdram_init #(
             ba <= 2'b11;
             addr <= 13'h1fff;
         end else if (state == STATE_AUTO_REF) begin
-            cmd <= `OP_AUTO_REFRESH;
+            cmd <= `OP_AUTO_REF;
             ba <= 2'b11;
             addr <= 13'h1fff;
         end else if (state == STATE_MR_SET) begin
