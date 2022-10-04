@@ -1,4 +1,5 @@
 /******************************************************************************
+
 SDRAM initialization:
 
 1. Power up
@@ -25,7 +26,6 @@ SDRAM initialization:
 module sdram_init #(
     parameter CLK = 100_000_000, // default to 100 MHz
     parameter CAS_LATENCY = 2, // CAS Latency: 1, 2, 3
-    parameter BURST_LENGTH = 4, // burst length: 1, 2, 4, 8
     parameter TPOWERUP = 200, // tPowerUp = 200 ns, wait time for power up
     parameter TRP = 20, // tRP = 20 ns, wait time for precharge
     parameter TRFC = 70, // tRFC = 70 ns, wait time for auto refresh
@@ -52,11 +52,6 @@ module sdram_init #(
     localparam MR_CAS_LATENCY = CAS_LATENCY == 1 ? 3'b001 :
                                (CAS_LATENCY == 2 ? 3'b010 :
                                (CAS_LATENCY == 3 ? 3'b011 : 3'b011));
-
-    localparam MR_BURST_LENGTH = BURST_LENGTH == 1 ? 3'b000 : 
-                                (BURST_LENGTH == 2 ? 3'b001 :
-                                (BURST_LENGTH == 4 ? 3'b010 :
-                                (BURST_LENGTH == 8 ? 3'b011 : 3'b111)));
 
     localparam
         CNT_0 = 8'b0,
@@ -163,8 +158,8 @@ module sdram_init #(
             // Operation Mode   = 00  = Standard Operation
             // CAS Latency      = 010 = 2
             // Burst Type       = 0   = Sequential
-            // Burst Length     = 010 = 4
-            addr <= { 3'b000, 1'b0, 2'b00, MR_CAS_LATENCY, 1'b0, MR_BURST_LENGTH };
+            // Burst Length     = 111 = Full Page
+            addr <= { 3'b000, 1'b0, 2'b00, MR_CAS_LATENCY, 1'b0, 3'b111 };
         end else begin
             cmd <= `OP_NOP;
             ba <= 2'b11;
