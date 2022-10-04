@@ -82,6 +82,7 @@ module sdram_write #(
             wr_end <= 1'b0;
     end
 
+    // fsm:
     always @ (posedge clk or negedge rst_n) begin
         if (! rst_n) begin
             state <= STATE_IDLE;
@@ -142,16 +143,33 @@ module sdram_write #(
             cmd <= `OP_NOP;
             ba <= 2'b11;
             addr <= 13'h1fff;
-        end else if (state == STATE_ACTIVE) begin
-            cmd <= `OP_ACTIVE;
-            ba <= wr_addr[23:22];
-            addr <= wr_addr[21:9];
-        end else if (state == STATE_WRITE) begin
-            case (cnt)
-                0: begin
-                    cmd <= `OP_WRITE;
+        end else begin
+            case (state)
+                STATE_ACTIVE: begin
+                    cmd <= `OP_ACTIVE;
                     ba <= wr_addr[23:22];
-                    addr <= { 4'b0000, wr_addr[8:0]};
+                    addr <= wr_addr[21:9];
+                end
+                STATE_WRITE: begin
+                    if (cnt == 0) begin
+                        cmd <= `OP_WRITE;
+                        ba <= wr_addr[23:22];
+                        addr <= { 4'b0000, wr_addr[8:0]};
+                    end else begin
+                        cmd <= `OP_NOP;
+                        ba <= 2'b11;
+                        addr <= 13'h1fff;
+                    end
+                end
+                STATE_BURST_TERM: begin
+                    cmd <= `OP_BURST_TERM;
+                    ba <= 2'b11;
+                    addr <= 13'h1fff;
+                end
+                STATE_PRECHARGE: begin
+                    cmd <= `OP_PRECHARGE;
+                    ba <= wr_addr[23:22];
+                    addr <= 13'h0000; // A10 = 0 = selected bank
                 end
                 default: begin
                     cmd <= `OP_NOP;
@@ -159,22 +177,10 @@ module sdram_write #(
                     addr <= 13'h1fff;
                 end
             endcase
-        end else if (state == STATE_BURST_TERM) begin
-            cmd <= `OP_BURST_TERM;
-            ba <= 2'b11;
-            addr <= 13'h1fff;
-        end else if (state == STATE_PRECHARGE) begin
-            cmd <= `OP_PRECHARGE;
-            ba <= wr_addr[23:22];
-            addr <= 13'h0000; // A10 = 0 = selected bank
-        end else begin
-            cmd <= `OP_NOP;
-            ba <= 2'b11;
-            addr <= 13'h1fff;
         end
     end
 
-    // write data output:
+    // data output:
     always @ (posedge clk or negedge rst_n) begin
         if (! rst_n) begin
             data <= 8'h0;
