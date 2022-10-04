@@ -1,4 +1,5 @@
 /******************************************************************************
+
 SDRAM auto refresh
 
 1. Precharge all banks
@@ -41,6 +42,7 @@ module sdram_aref #(
         CLK_TRFC = TRFC / TIME_PER_CLK, // tRFC clock cycles
         CLK_BUFFER = 10; // a buffer clock cycles
 
+    // aref count range:
     localparam CNT_AREF_REQ_MAX = 64_000_000 / TIME_PER_CLK / ROWS - CLK_TRP - 2 * CLK_TRFC - CLK_BUFFER;
 
     localparam
