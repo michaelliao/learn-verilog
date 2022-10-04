@@ -163,18 +163,24 @@ module sdram_aref #(
             cmd <= `OP_NOP;
             ba <= 2'b11;
             addr <= 13'h1fff;
-        end else if (state == STATE_PRECHARGE) begin
-            cmd <= `OP_PRECHARGE;
-            ba <= 2'b11;
-            addr <= 13'h1fff;
-        end else if (state == STATE_AUTO_REF) begin
-            cmd <= `OP_AUTO_REF;
-            ba <= 2'b11;
-            addr <= 13'h1fff;
         end else begin
-            cmd <= `OP_NOP;
-            ba <= 2'b11;
-            addr <= 13'h1fff;
+            case (state)
+                STATE_PRECHARGE: begin
+                    cmd <= `OP_PRECHARGE;
+                    ba <= 2'b11;
+                    addr <= 13'h1fff;
+                end
+                STATE_AUTO_REF: begin
+                    cmd <= `OP_AUTO_REF;
+                    ba <= 2'b11;
+                    addr <= 13'h1fff;
+                end
+                default: begin
+                    cmd <= `OP_NOP;
+                    ba <= 2'b11;
+                    addr <= 13'h1fff;
+                end
+            endcase
         end
     end
 
