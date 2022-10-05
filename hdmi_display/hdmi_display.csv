@@ -1,0 +1,34 @@
+# Copyright (C) 2020  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and any partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel FPGA IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Intel and sold by Intel or its authorized distributors.  Please
+# refer to the applicable agreement for further details, at
+# https://fpgasoftware.intel.com/eula.
+
+# Quartus Prime Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
+# File: C:\Users\Michael\Git\GitHub\learn-verilog\hdmi_display\hdmi_display.csv
+# Generated on: Wed Oct 05 16:40:50 2022
+
+# Note: The column header names should not be changed if you wish to import this .csv file into the Quartus Prime software.
+
+To,Direction,Location,I/O Bank,VREF Group,Fitter Location,I/O Standard,Reserved,Current Strength,Slew Rate,Differential Pair,Strict Preservation
+ddc_scl,Output,PIN_N13,5,B5_N0,PIN_K1,,,,,,
+ddc_sda,Output,PIN_M12,5,B5_N0,PIN_N5,,,,,,
+sys_clk,Input,PIN_E1,1,B1_N0,PIN_E16,,,,,,
+sys_rst_n,Input,PIN_M15,5,B5_N0,PIN_E15,,,,,,
+tmds_clk_n,Output,PIN_P16,5,B5_N0,PIN_L3,,,,,,
+tmds_clk_p,Output,PIN_R16,5,B5_N0,PIN_L15,,,,,,
+tmds_data_n[2],Output,PIN_K16,5,B5_N0,PIN_E5,,,,,,
+tmds_data_n[1],Output,PIN_L16,5,B5_N0,PIN_E11,,,,,,
+tmds_data_n[0],Output,PIN_N16,5,B5_N0,PIN_K15,,,,,,
+tmds_data_p[2],Output,PIN_K15,5,B5_N0,PIN_M11,,,,,,
+tmds_data_p[1],Output,PIN_L15,5,B5_N0,PIN_D3,,,,,,
+tmds_data_p[0],Output,PIN_N15,5,B5_N0,PIN_A13,,,,,,
