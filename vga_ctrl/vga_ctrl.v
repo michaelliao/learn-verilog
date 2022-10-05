@@ -14,19 +14,20 @@ VGA Timings: http://martin.hinner.info/vga/timing.html
 ***********************************************************************************************/
 
 module vga_ctrl #(
-    parameter PIX_REQ_OFFSET = 1 // default to 1
+    parameter PIX_REQ_OFFSET = 1, // default to 1
+    parameter RGB_WIDTH = 16 // 16 = RGB-565, 24 = RGB-888
 )
 (
     input  wire clk,
     input  wire rst_n,
-    input  wire [15:0] in_rgb,
+    input  wire [RGB_WIDTH-1:0] in_rgb,
 
     output wire hsync,
     output wire vsync,
     output wire pix_data_req,
     output wire [9:0]  pix_x,
     output wire [9:0]  pix_y,
-    output wire [15:0] out_rgb
+    output wire [RGB_WIDTH-1:0] out_rgb
 );
 
 `define DATA_0 10'd0
@@ -95,6 +96,6 @@ parameter H_SYNC  = 10'd96,
 
     assign vsync = cnt_v < V_SYNC ? 1'b1 : 1'b0;
 
-    assign out_rgb = pix_valid == 1'b1 ? in_rgb : 16'h0000;
+    assign out_rgb = pix_valid == 1'b1 ? in_rgb : {RGB_WIDTH{1'b0}};
 
 endmodule
