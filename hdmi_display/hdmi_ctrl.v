@@ -78,4 +78,11 @@ module hdmi_ctrl
         .ser_data_n (hdmi_b_n)
     );
 
+    par_to_ser par_to_ser_clk (
+        .clk_5x (clk_5x),
+        .par_data (10'b1111100000),
+        .ser_data_p (hdmi_clk_p),
+        .ser_data_n (hdmi_clk_n)
+    );
+
 endmodule
