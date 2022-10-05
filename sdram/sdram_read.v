@@ -32,6 +32,7 @@ module sdram_read #(
     input rst_n,
     input init_end, // 1 = sdram_init ok
     input rd_en,
+    input rd_in,
     input [7:0] rd_data, // read data
     input [23:0] rd_addr, // read address
     input [3:0] rd_burst_length, // 1 ~ 8
@@ -40,6 +41,7 @@ module sdram_read #(
     output reg [12:0] addr,
     output reg [7:0] data,
     output reg data_en,
+    output reg rd_req,
     output reg rd_end
 );
 

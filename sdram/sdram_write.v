@@ -32,6 +32,7 @@ module sdram_write #(
     input rst_n,
     input init_end, // 1 = sdram_init ok
     input wr_en,
+    input wr_in,
     input [23:0] wr_addr, // write address
     input [63:0] wr_data, // 8 bytes
     input [3:0] wr_burst_length, // 1 ~ 8
