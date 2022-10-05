@@ -1,13 +1,12 @@
 
 module  encode (
-    input   wire            sys_clk     ,   //时钟信号
-    input   wire            sys_rst_n   ,   //复位信号,低有效
-    input   wire    [7:0]   data_in     ,   //输入8bit待编码数据
-    input   wire            c0          ,   //控制信号c0
-    input   wire            c1          ,   //控制信号c1
-    input   wire            de          ,   //使能信号
-
-    output  reg     [9:0]   data_out        //输出编码后的10bit数据
+    input clk,
+    input rst_n,
+    input c0,
+    input c1,
+    input de,
+    input [7:0] data_in,
+    output reg [9:0] data_out
 );
 
     //parameter define
@@ -36,8 +35,8 @@ module  encode (
     reg             c1_reg2     ;   //控制信号c1打两拍
     reg     [8:0]   q_m_reg     ;   //q_m信号打一拍
 
-    always@(posedge sys_clk or negedge sys_rst_n)
-        if(sys_rst_n == 1'b0)
+    always@(posedge clk or negedge rst_n)
+        if(rst_n == 1'b0)
             data_in_n1  <=  4'd0;
         else
             data_in_n1  <=  data_in[0] + data_in[1] + data_in[2]
@@ -45,8 +44,8 @@ module  encode (
                             + data_in[6] + data_in[7];
 
     //data_in_reg:待编码数据打一拍
-    always@(posedge sys_clk or negedge sys_rst_n)
-        if(sys_rst_n == 1'b0)
+    always@(posedge clk or negedge rst_n)
+        if(rst_n == 1'b0)
             data_in_reg <=  8'b0;
         else
             data_in_reg <=  data_in;
@@ -68,8 +67,8 @@ module  encode (
 
     //q_m_n1:转换后9bit数据中1的个数
     //q_m_n0:转换后9bit数据中0的个数
-    always@(posedge sys_clk or negedge sys_rst_n)
-        if(sys_rst_n == 1'b0)
+    always@(posedge clk or negedge rst_n)
+        if(rst_n == 1'b0)
             begin
                 q_m_n1  <=  4'd0;
                 q_m_n0  <=  4'd0;
@@ -85,8 +84,8 @@ module  encode (
     assign  condition_3 = (((~cnt[4] == 1'b1) && (q_m_n1 > q_m_n0))
                         || ((cnt[4] == 1'b1) && (q_m_n0 > q_m_n1)));
 
-    always@(posedge sys_clk or negedge sys_rst_n)
-        if(sys_rst_n == 1'b0)
+    always@(posedge clk or negedge rst_n)
+        if(rst_n == 1'b0)
             begin
                 de_reg1 <=  1'b0;
                 de_reg2 <=  1'b0;
@@ -107,8 +106,8 @@ module  encode (
                 q_m_reg <=  q_m;
             end
 
-    always @ (posedge sys_clk or negedge sys_rst_n) begin
-        if(sys_rst_n == 1'b0) begin
+    always @ (posedge clk or negedge rst_n) begin
+        if(rst_n == 1'b0) begin
                 data_out    <=  10'b0;
                 cnt         <=  5'b0;
         end else begin

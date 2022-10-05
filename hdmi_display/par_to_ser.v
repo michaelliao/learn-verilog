@@ -27,16 +27,14 @@ module par_to_ser
 
     end
 
-    //------------- ddio_out_inst0 -------------
-    ddio_out    ddio_out_inst0 (
+    ddio ddio_0 (
         .datain_h   (data_rise_s[0] ),
         .datain_l   (data_fall_s[0] ),
         .outclock   (~clk_5x        ),
         .dataout    (ser_data_p     )
     );
 
-    //------------- ddio_out_inst1 -------------
-    ddio_out    ddio_out_inst1 (
+    ddio ddio_1 (
         .datain_h   (~data_rise_s[0]),
         .datain_l   (~data_fall_s[0]),
         .outclock   (~clk_5x        ),

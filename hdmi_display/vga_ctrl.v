@@ -25,8 +25,9 @@ module vga_ctrl #(
     output wire hsync,
     output wire vsync,
     output wire pix_data_req,
-    output wire [9:0]  pix_x,
-    output wire [9:0]  pix_y,
+    output [9:0] pix_x,
+    output [9:0] pix_y,
+    output pix_valid,
     output wire [RGB_WIDTH-1:0] out_rgb
 );
 
@@ -48,8 +49,6 @@ parameter H_SYNC  = 10'd96,
 
     // 0 ~ 524
     reg [9:0] cnt_v;
-
-    wire pix_valid;
 
     always @ (posedge clk or negedge rst_n) begin
         if (! rst_n)
