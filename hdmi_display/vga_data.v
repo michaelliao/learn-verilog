@@ -9,7 +9,7 @@ module vga_data (
     //reg [9:0] image_x;
     //reg [9:0] image_y;
 
-	 localparam image_x = 0, image_y = 0;
+	 localparam image_x = 200, image_y = 300;
 
 	 reg [17:0] cnt;
 	 

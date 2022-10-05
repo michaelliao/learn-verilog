@@ -6,7 +6,10 @@ module tb_vga_data ();
     reg rst_n;
     reg [13:0] pix_x;
     reg [13:0] pix_y;
-    reg [13:0] image_addr;
+    wire [13:0] image_addr;
+
+    integer x;
+    integer y;
 
     vga_data component(
         .clk(clk),
@@ -23,14 +26,20 @@ module tb_vga_data ();
         pix_y = 14'b0;
         #20
         rst_n = 1'b1;
-        #3100000
+        #20
+        for (y=0; y<480; y=y+1) begin
+            for (x=0; x<640; x=x+1) begin
+                #20
+                pix_x = x;
+                pix_y = y;
+            end
+        end
+        #20
         $finish;
     end
 
     always #10 clk = ~clk;
 
-    always #10 pix_x = pix_x < 640 ? pix_x + 1'b1 : 0;
-    always #10 pix_y = pix_y < 480 ? pix_y + 1'b1 : 0;
 
     initial begin
         $dumpfile("tb_vga_data.vcd");
