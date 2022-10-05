@@ -1,37 +1,37 @@
 module vga_data (
     input clk,
     input rst_n,
-    input [9:0] pix_x,
-    input [9:0] pix_y,
-    output reg [23:0] pix_rgb
+    input [13:0] pix_x,
+    input [13:0] pix_y,
+    output reg [13:0] image_addr
 );
 
-`define BLACK  24'h000000
-`define RED    24'hff0000
-`define GREEN  24'h00ff00
-`define BLUE   24'h0000ff
-`define ORANGE 24'hff8000
-`define CYAN   24'h00ffff
-`define GRAY   24'h808080
-`define WHITE  24'hffffff
+    //reg [9:0] image_x;
+    //reg [9:0] image_y;
 
+	 localparam image_x = 0, image_y = 0;
+
+	 reg [17:0] cnt;
+	 
     always @ (posedge clk or negedge rst_n) begin
-        if (rst_n == 1'b0)
-            pix_rgb <= `BLACK;
-        // border:
-        else if (pix_x < 1 || pix_y < 1 || pix_x >= 639 || pix_y >= 479)
-            pix_rgb <= `RED;
-        // (120, 100) - (220, 180)
-        else if (pix_x >= 120 && pix_x < 220 && pix_y >= 100 && pix_y < 180)
-            pix_rgb <= `RED;
-        // (420, 100) - (520, 180)
-        else if (pix_x >= 420 && pix_x < 520 && pix_y >= 100 && pix_y < 180)
-            pix_rgb <= `RED;
-        // (220, 300) - (420, 380)
-        else if (pix_x >= 220 && pix_x < 420 && pix_y >= 300 && pix_y < 380)
-            pix_rgb <= `BLUE;
-        else
-            pix_rgb <= `GRAY;
+        if (! rst_n) begin
+            image_addr <= 14'b0;
+        end else begin
+            if ((pix_x >= image_x) && (pix_x < (image_x + 128)) && (pix_y >= image_y) && (pix_y < (image_y + 76)))
+                image_addr <= ((pix_y - image_y) * 128) + pix_x - image_x;
+            else
+                image_addr <= 14'b0;
+        end
     end
+
+//    always @ (posedge clk or negedge rst_n) begin
+//        if (! rst_n) begin
+//		      cnt <= 0;
+//            image_x <= 10'd100;
+//            image_y <= 10'd260;
+//        end else begin
+//            cnt <= cnt + 1;
+//        end
+//    end
 
 endmodule
