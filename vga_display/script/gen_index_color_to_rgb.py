@@ -26,7 +26,7 @@ COLORS = [
 template_1 = '''// VGA 16 Color Palette:
 // https://en.wikipedia.org/wiki/Color_Graphics_Adapter
 
-module text_color (
+module index_color_to_rgb (
     input wire [3:0] color_index,
     output reg [15:0] color_rgb
 );
@@ -68,7 +68,7 @@ def main():
         sg = g * 64 // 256
         sb = b * 32 // 256
         s = s + \
-            f'            4\'d{n}: color_rgb = 16\'b{to_bin(sr,5)}_{to_bin(sg, 6)}_{to_bin(sb, 5)};' + \
+            f'            4\'d{n}: color_rgb = 16\'b{to_bin(sr, 5)}_{to_bin(sg, 6)}_{to_bin(sb, 5)};' + \
             f' // #{to_rgb(rgb)} = {name}\n'
         n = n + 1
 

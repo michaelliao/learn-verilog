@@ -26,7 +26,7 @@ COLORS = [
 template_1 = '''// VGA 16 Color Palette:
 // https://en.wikipedia.org/wiki/Color_Graphics_Adapter
 
-module text_color (
+module index_color_to_rgb (
     input wire [3:0] color_index,
     output reg [23:0] color_rgb
 );
