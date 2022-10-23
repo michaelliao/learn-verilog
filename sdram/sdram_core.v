@@ -63,7 +63,8 @@ module sdram_core #(
     parameter SDR_TPOWERUP = 200_000, // SDR_tPowerUp = 200 us, wait time for power up
     parameter SDR_TRCD = 20, // tRCD = 20 ns, wait time for active
     parameter SDR_TRP = 20, // tRP = 20 ns, wait time for precharge
-    parameter SDR_TRFC = 70 // tRFC = 70 ns, wait time for auto refresh
+    parameter SDR_TRFC = 70, // tRFC = 70 ns, wait time for auto refresh
+    parameter SDR_REFRESH_CYCLE_TIME = 64_000_000 // refresh cycle = 64 ms, change only for test
 )
 (
     input clk,
@@ -150,7 +151,7 @@ module sdram_core #(
                                     (SDR_RW_DATA_COUNT == 8 ? 3'b011 : 3'b111)));
 
     // aref count range:
-    localparam CNT_AREF_REQ_MAX = 64_000_000 / TIME_PER_CLK / SDR_ROWS_COUNT - CLK_TRP - 2 * CLK_TRFC - CLK_BUFFER;
+    localparam CNT_AREF_REQ_MAX = SDR_REFRESH_CYCLE_TIME / TIME_PER_CLK / SDR_ROWS_COUNT - CLK_TRP - 2 * CLK_TRFC - CLK_BUFFER;
 
     localparam
         CNT_0 = 8'b0,
