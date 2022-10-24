@@ -21,8 +21,8 @@ module tb_sdram_core();
     end
 
     initial begin
-        clk_100m_shift = 1'b0;
-        #2
+        clk_100m_shift = 1'b1;
+        #7
         forever begin
             #5 clk_100m_shift = ~clk_100m_shift;
         end
@@ -108,7 +108,7 @@ module tb_sdram_core();
         .addr (sdr_addr)
     );
 
-    mt48lc16m16a2 sdr_inst (
+    mt48lc16m16a2 sdram_inst (
         .Dq (sdr_dq),
         .Addr (sdr_addr),
         .Ba (sdr_ba),
@@ -124,6 +124,7 @@ module tb_sdram_core();
     initial begin
         $dumpfile("tb_sdram_core.vcd");
         $dumpvars(0, component);
+        $dumpvars(0, sdram_inst);
         #3000
         $finish;
     end

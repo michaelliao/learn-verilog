@@ -255,26 +255,29 @@ module sdram_core #(
 
                 STATE_RD_ACTIVE: begin
                     // 等待 CLK_TRCD 个时钟后进入 READ_A 状态:
-                    if (cnt == CLK_TRCD - 1) begin
+                    if (cnt == CLK_TRCD) begin
                         state <= STATE_RD_READ_A;
                         cnt <= CNT_0;
-                        rd_en <= 1'b1;
-                        rd_data_cache <= inout_data;
+                        rd_full_data_cache[SDR_DATA_WIDTH-1:0] <= inout_data;
                     end else begin
                         cnt <= cnt + 1;
                     end
                 end
+
                 STATE_RD_READ_A: begin
                     // 读取延迟 SDR_CL + 读取次数 SDR_RW_DATA_COUNT + precharge时间 CLK_TRP
                     if (cnt >= SDR_CL && cnt < (SDR_CL + SDR_RW_DATA_COUNT - 1)) begin
-                        rd_data_cache <= inout_data;
-                        rd_full_data_cache[SDR_DATA_WIDTH-1:0] <= rd_data_cache;
+                        rd_full_data_cache[SDR_DATA_WIDTH-1:0] <= inout_data;
                         if (IO_DATA_WIDTH > SDR_DATA_WIDTH) begin
                             rd_full_data_cache[IO_DATA_WIDTH-1:SDR_DATA_WIDTH] <= rd_full_data_cache[IO_DATA_WIDTH-SDR_DATA_WIDTH-1:0];
                         end
                     end
-                    if (cnt == (SDR_CL + SDR_RW_DATA_COUNT + CLK_TRP)) begin
+                    if (cnt == (SDR_CL + SDR_RW_DATA_COUNT)) begin
+                        rd_en <= 1'b1;
+                    end else if (cnt == (SDR_CL + SDR_RW_DATA_COUNT + 1)) begin
                         rd_en <= 1'b0;
+                    end 
+                    if (cnt == (SDR_CL + SDR_RW_DATA_COUNT + CLK_TRP)) begin
                         state <= STATE_IDLE;
                     end else begin
                         cnt <= cnt + 1;
@@ -309,7 +312,6 @@ module sdram_core #(
                     end else begin
                         // 写入低位:
                         if (cnt < SDR_RW_DATA_COUNT) begin
-                            wr_en <= 1'b1;
                             wr_data_cache <= wr_full_data_cache[SDR_DATA_WIDTH-1:0];
                             wr_dqm_out <= wr_dqm_cache[SDR_DQM_WIDTH-1:0];
                             if (IO_DATA_WIDTH > SDR_DATA_WIDTH) begin
@@ -317,7 +319,8 @@ module sdram_core #(
                                 wr_full_data_cache <= wr_full_data_cache >> SDR_DATA_WIDTH;
                                 wr_dqm_cache <= wr_dqm_cache >> SDR_DQM_WIDTH;
                             end
-                        end else begin
+                        end
+                        if (cnt == SDR_RW_DATA_COUNT - 1) begin
                             wr_en <= 1'b0;
                         end
                         cnt <= cnt + 1;
