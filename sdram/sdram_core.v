@@ -54,7 +54,6 @@ module sdram_core #(
     parameter CLK = 100_000_000, // default to 100 MHz
     parameter IO_DATA_WIDTH = 32, // input / output data width: 16, 32, 64, default to 32.
     parameter SDR_DATA_WIDTH = 16, // data width: 8 / 16, default to 16
-    parameter SDR_ADDR_WIDTH = 13, // address width, default to 13
     parameter SDR_BA_WIDTH = 2, // bank width, default to 2
     parameter SDR_ROW_WIDTH = 13, // row width, default to 13
     parameter SDR_COL_WIDTH = 9, // col width, default to 9
@@ -81,32 +80,32 @@ module sdram_core #(
     input in_wr_req, // 写请求信号
     input [IO_DQM_WIDTH-1:0] in_wr_dqm, // 写字节掩码输入
     input [IO_DATA_WIDTH-1:0] in_wr_data, // 写数据输入
-    output [SDR_DQM_WIDTH-1:0] out_wr_dqm, // 写字节掩码输出
+    output [SDR_DQM_WIDTH-1:0] out_wr_dqm, // 写字节掩码输出至SDR
     output out_wr_ack, // 已接受写请求(写输入采样已完成)
     output out_wr_done, // 写数据完成
 
     output reg [3:0] cmd,
     output reg [SDR_BA_WIDTH-1:0] ba, // bank
-    output reg [SDR_ADDR_WIDTH-1:0] addr
+    output reg [SDR_ROW_WIDTH-1:0] addr
 );
 
     // SDRAM command: CS#, RAS#, CAS#, WE#
     localparam
-        SDR_OP_NOP        = 4'b0111,
-        SDR_OP_PRECHARGE  = 4'b0010,
-        SDR_OP_AUTO_REF   = 4'b0001,
-        SDR_OP_LOAD_MR    = 4'b0000,
-        SDR_OP_ACTIVE     = 4'b0011,
-        SDR_OP_WRITE      = 4'b0100,
-        SDR_OP_READ       = 4'b0101,
-        SDR_OP_BURST_TERM = 4'b0110;
+        SDR_OP_LOAD_MR    = 4'b0000, // 0
+        SDR_OP_AUTO_REF   = 4'b0001, // 1
+        SDR_OP_PRECHARGE  = 4'b0010, // 2
+        SDR_OP_ACTIVE     = 4'b0011, // 3
+        SDR_OP_WRITE      = 4'b0100, // 4
+        SDR_OP_READ       = 4'b0101, // 5
+        SDR_OP_BURST_TERM = 4'b0110, // 6
+        SDR_OP_NOP        = 4'b0111; // 7
 
     // ba / addr min / max value: b00...0, b11...1:
     localparam
         SDR_BA_MIN = {SDR_BA_WIDTH{1'b0}},
         SDR_BA_MAX = {SDR_BA_WIDTH{1'b1}},
-        SDR_ADDR_MIN = {SDR_ADDR_WIDTH{1'b0}},
-        SDR_ADDR_MAX = {SDR_ADDR_WIDTH{1'b1}};
+        SDR_ADDR_MIN = {SDR_ROW_WIDTH{1'b0}},
+        SDR_ADDR_MAX = {SDR_ROW_WIDTH{1'b1}};
 
     // address 地址到 BA / ROW / COL 的映射:
     localparam
@@ -290,14 +289,23 @@ module sdram_core #(
                     if (cnt == CLK_TRCD - 1) begin
                         state <= STATE_WR_WRITE_A;
                         cnt <= CNT_0;
+                        // 在下一个状态WRITE_A之前准备好写入数据:
+                        wr_en <= 1'b1;
+                        wr_data_cache <= wr_full_data_cache[SDR_DATA_WIDTH-1:0];
+                        wr_dqm_out <= wr_dqm_cache[SDR_DQM_WIDTH-1:0];
+                        if (IO_DATA_WIDTH > SDR_DATA_WIDTH) begin
+                            // 向右移位以便下次继续写入低位:
+                            wr_full_data_cache <= wr_full_data_cache >> SDR_DATA_WIDTH;
+                            wr_dqm_cache <= wr_dqm_cache >> SDR_DQM_WIDTH;
+                        end
                     end else begin
                         cnt <= cnt + 1;
                     end
                 end
 
                 STATE_WR_WRITE_A: begin
-                    // 写入延迟 SDR_CL + 写入次数 SDR_RW_DATA_COUNT + precharge时间 CLK_TRP
-                    if (cnt == (SDR_CL + SDR_RW_DATA_COUNT + CLK_TRP)) begin
+                    // 写入次数 SDR_RW_DATA_COUNT + precharge时间 CLK_TRP
+                    if (cnt == (SDR_RW_DATA_COUNT + CLK_TRP - 1)) begin
                         state <= STATE_IDLE;
                     end else begin
                         // 写入低位:
@@ -306,6 +314,7 @@ module sdram_core #(
                             wr_data_cache <= wr_full_data_cache[SDR_DATA_WIDTH-1:0];
                             wr_dqm_out <= wr_dqm_cache[SDR_DQM_WIDTH-1:0];
                             if (IO_DATA_WIDTH > SDR_DATA_WIDTH) begin
+                                // 向右移位以便下次继续写入低位:
                                 wr_full_data_cache <= wr_full_data_cache >> SDR_DATA_WIDTH;
                                 wr_dqm_cache <= wr_dqm_cache >> SDR_DQM_WIDTH;
                             end
@@ -436,14 +445,14 @@ module sdram_core #(
                 cmd = SDR_OP_READ;
                 ba = addr_cache[BA_H:BA_L];
                 // set A10 = 1 to enable auto precharge:
-                addr = {{(SDR_ADDR_WIDTH-10){1'b0}}, 1'b1, {(10-SDR_COL_WIDTH-1){1'b0}}, addr_cache[COL_H:COL_L]};
+                addr = {{(SDR_ROW_WIDTH-11){1'b0}}, 1'b1, {(10-SDR_COL_WIDTH){1'b0}}, addr_cache[COL_H:COL_L]};
             end
             STATE_WR_WRITE_A: begin
                 // 输出 write 命令:
                 cmd = SDR_OP_WRITE;
                 ba = addr_cache[BA_H:BA_L];
                 // set A10 = 1 to enable auto precharge:
-                addr = {{(SDR_ADDR_WIDTH-10){1'b0}}, 1'b1, {(10-SDR_COL_WIDTH-1){1'b0}}, addr_cache[COL_H:COL_L]};
+                addr = {{(SDR_ROW_WIDTH-11){1'b0}}, 1'b1, {(10-SDR_COL_WIDTH){1'b0}}, addr_cache[COL_H:COL_L]};
             end
             STATE_INIT_MR_SET: begin
                 cmd = SDR_OP_LOAD_MR;
@@ -454,7 +463,7 @@ module sdram_core #(
                 // CAS Latency      = 011 = 3
                 // Burst Type       = 0   = Sequential
                 // Burst Length     = 001 = 2
-                addr = {{SDR_ADDR_WIDTH-10{1'b0}}, { 1'b0, 2'b00, SDR_MR_CAS_LATENCY, 1'b0, SDR_MR_BURST_LENGTH }};
+                addr = {{SDR_ROW_WIDTH-10{1'b0}}, { 1'b0, 2'b00, SDR_MR_CAS_LATENCY, 1'b0, SDR_MR_BURST_LENGTH }};
             end
             default: begin
                 cmd <= SDR_OP_NOP;

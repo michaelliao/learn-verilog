@@ -34,6 +34,33 @@ module tb_sdram_core();
     wire [3:0] sdr_cmd;
     wire [1:0] sdr_dqm;
 
+    reg [31:0] in_addr;
+
+    reg in_wr_req;
+    reg [3:0] in_wr_dqm;
+    reg [31:0] in_wr_data;
+
+    initial begin
+        in_wr_req = 1'b0;
+        in_wr_data = 31'b0;
+        in_addr = 31'b0;
+        in_wr_dqm = 4'b0000;
+    end
+
+
+    initial begin
+        #430
+        // write data 0xa1b2c3d4 to address 32'b10_1111101000000_100000001_0:
+        // BA = 2, ROW = 8000, COL = 257
+        in_wr_req = 1'b1;
+        in_addr = 32'b10_1111101000000_100000001_0;
+        in_wr_data = 32'ha1b2c3d4;
+        in_wr_dqm = 4'b0000;
+        #40
+        in_wr_req = 1'b0;
+    end
+
+
     sdram_core #(
         .SDR_TPOWERUP (200), // speed power up from 200 us to 200 ns
         .SDR_INIT_AREF_COUNT (2), // aref x2 when init
@@ -42,8 +69,16 @@ module tb_sdram_core();
     component (
         .clk (clk_100m),
         .rst_n (rst_n),
-        .inout_data (sdr_dq),
 
+        // connect in top:
+        .in_addr (in_addr),
+        .in_wr_req (in_wr_req),
+        .in_wr_data (in_wr_data),
+        .in_wr_dqm (in_wr_dqm),
+
+        // connect to SDR:
+        .out_wr_dqm (sdr_dqm),
+        .inout_data (sdr_dq),
         .cmd (sdr_cmd),
         .ba (sdr_ba),
         .addr (sdr_addr)
