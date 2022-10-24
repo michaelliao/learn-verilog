@@ -258,7 +258,6 @@ module sdram_core #(
                     if (cnt == CLK_TRCD) begin
                         state <= STATE_RD_READ_A;
                         cnt <= CNT_0;
-                        rd_full_data_cache[SDR_DATA_WIDTH-1:0] <= inout_data;
                     end else begin
                         cnt <= cnt + 1;
                     end
@@ -266,18 +265,19 @@ module sdram_core #(
 
                 STATE_RD_READ_A: begin
                     // 读取延迟 SDR_CL + 读取次数 SDR_RW_DATA_COUNT + precharge时间 CLK_TRP
-                    if (cnt >= SDR_CL && cnt < (SDR_CL + SDR_RW_DATA_COUNT - 1)) begin
+                    if (cnt >= SDR_CL - 1 && cnt < (SDR_CL - 1 + SDR_RW_DATA_COUNT)) begin
                         rd_full_data_cache[SDR_DATA_WIDTH-1:0] <= inout_data;
                         if (IO_DATA_WIDTH > SDR_DATA_WIDTH) begin
-                            rd_full_data_cache[IO_DATA_WIDTH-1:SDR_DATA_WIDTH] <= rd_full_data_cache[IO_DATA_WIDTH-SDR_DATA_WIDTH-1:0];
+                            rd_full_data_cache[IO_DATA_WIDTH - 1:SDR_DATA_WIDTH] <= rd_full_data_cache[IO_DATA_WIDTH-SDR_DATA_WIDTH-1:0];
                         end
                     end
-                    if (cnt == (SDR_CL + SDR_RW_DATA_COUNT)) begin
+                    if (cnt == (SDR_CL - 1 + SDR_RW_DATA_COUNT)) begin
                         rd_en <= 1'b1;
-                    end else if (cnt == (SDR_CL + SDR_RW_DATA_COUNT + 1)) begin
+                    end else if (cnt == (SDR_CL + SDR_RW_DATA_COUNT)) begin
                         rd_en <= 1'b0;
-                    end 
-                    if (cnt == (SDR_CL + SDR_RW_DATA_COUNT + CLK_TRP)) begin
+                    end
+                    // 下一个状态:
+                    if (cnt == (SDR_CL + SDR_RW_DATA_COUNT + CLK_TRP - 2)) begin
                         state <= STATE_IDLE;
                     end else begin
                         cnt <= cnt + 1;

@@ -21,7 +21,7 @@ module tb_sdram_core();
     end
 
     initial begin
-        clk_100m_shift = 1'b1;
+        clk_100m_shift = 1'b0;
         #7
         forever begin
             #5 clk_100m_shift = ~clk_100m_shift;
@@ -81,6 +81,16 @@ module tb_sdram_core();
         in_rd_req = 1'b1;
         in_addr = 32'b10_1111101000000_100000110_0;
         #40
+        in_rd_req = 1'b0;
+    end
+
+    initial begin
+        #956
+        // read data from address 32'b10_1111101000000_100000110_0:
+        // BA = 2, ROW = 8000, COL = 262
+        in_rd_req = 1'b1;
+        in_addr = 32'b10_1111101000000_100000110_0;
+        #200
         in_rd_req = 1'b0;
     end
 
