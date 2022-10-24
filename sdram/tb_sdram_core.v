@@ -39,27 +39,50 @@ module tb_sdram_core();
     reg in_wr_req;
     reg [3:0] in_wr_dqm;
     reg [31:0] in_wr_data;
+    reg in_rd_req;
 
     initial begin
         in_wr_req = 1'b0;
         in_wr_data = 31'b0;
         in_addr = 31'b0;
         in_wr_dqm = 4'b0000;
+        in_rd_req = 1'b0;
     end
 
 
     initial begin
-        #430
-        // write data 0xa1b2c3d4 to address 32'b10_1111101000000_100000001_0:
-        // BA = 2, ROW = 8000, COL = 257
+        #429
+        // write data 0xa1b2c3d4 to address 32'b10_1111101000000_100000110_0:
+        // BA = 2, ROW = 8000, COL = 262
         in_wr_req = 1'b1;
-        in_addr = 32'b10_1111101000000_100000001_0;
+        in_addr = 32'b10_1111101000000_100000110_0;
         in_wr_data = 32'ha1b2c3d4;
         in_wr_dqm = 4'b0000;
         #40
         in_wr_req = 1'b0;
     end
 
+    initial begin
+        #489
+        // write data 0x??e5f6?? to address 32'b10_1111101000000_100000110_0:
+        // BA = 2, ROW = 8000, COL = 262
+        in_wr_req = 1'b1;
+        in_addr = 32'b10_1111101000000_100000110_0;
+        in_wr_data = 32'h00e5f600;
+        in_wr_dqm = 4'b1001;
+        #40
+        in_wr_req = 1'b0;
+    end
+
+    initial begin
+        #568
+        // read data from address 32'b10_1111101000000_100000110_0:
+        // BA = 2, ROW = 8000, COL = 262
+        in_rd_req = 1'b1;
+        in_addr = 32'b10_1111101000000_100000110_0;
+        #40
+        in_rd_req = 1'b0;
+    end
 
     sdram_core #(
         .SDR_TPOWERUP (200), // speed power up from 200 us to 200 ns
@@ -75,6 +98,7 @@ module tb_sdram_core();
         .in_wr_req (in_wr_req),
         .in_wr_data (in_wr_data),
         .in_wr_dqm (in_wr_dqm),
+        .in_rd_req (in_rd_req),
 
         // connect to SDR:
         .out_wr_dqm (sdr_dqm),
