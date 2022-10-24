@@ -24,7 +24,7 @@
 *                IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR
 *                A PARTICULAR PURPOSE, OR AGAINST INFRINGEMENT.
 *
-*                Copyright © 2001 Micron Semiconductor Products, Inc.
+*                Copyright &copy; 2001 Micron Semiconductor Products, Inc.
 *                All rights researved
 *
 * Rev  Author          Date        Changes
@@ -938,7 +938,7 @@ module mt48lc16m16a2 (Dq, Addr, Ba, Clk, Cke, Cs_n, Ras_n, Cas_n, We_n, Dqm);
                 WR_chkm [Bank] = $time;
 
                 if (Debug) begin
-                    $display("%m : at time %t WRITE: Bank = %d Row = %d, Col = %d, Data = %d", $time, Bank, Row, Col, Dq_dqm);
+                    $display("%m : at time %t WRITE: Bank = %d Row = %d, Col = %d, Data = 0x%h", $time, Bank, Row, Col, Dq_dqm);
                 end
             end else begin
                 if (Debug) begin
@@ -970,7 +970,7 @@ module mt48lc16m16a2 (Dq, Addr, Ba, Clk, Cke, Cs_n, Ras_n, Cas_n, We_n, Dqm);
             if (Dqm_reg0 !== 2'b11) begin
                 Dq_reg = #tAC Dq_dqm;
                 if (Debug) begin
-                    $display("%m : at time %t READ : Bank = %d Row = %d, Col = %d, Data = %d", $time, Bank, Row, Col, Dq_reg);
+                    $display("%m : at time %t READ : Bank = %d Row = %d, Col = %d, Data = 0x%h", $time, Bank, Row, Col, Dq_reg);
                 end
             end else begin
                 Dq_reg = #tHZ {data_bits{1'bz}};
