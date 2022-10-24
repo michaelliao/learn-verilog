@@ -264,11 +264,12 @@ module sdram_core #(
                 end
 
                 STATE_RD_READ_A: begin
-                    // 读取延迟 SDR_CL + 读取次数 SDR_RW_DATA_COUNT + precharge时间 CLK_TRP
+                    // 读取延迟 SDR_CL + 读取次数 SDR_RW_DATA_COUNT
                     if (cnt >= SDR_CL - 1 && cnt < (SDR_CL - 1 + SDR_RW_DATA_COUNT)) begin
-                        rd_full_data_cache[SDR_DATA_WIDTH-1:0] <= inout_data;
+                        // 读入高位:
+                        rd_full_data_cache[IO_DATA_WIDTH - 1 : IO_DATA_WIDTH - SDR_DATA_WIDTH] <= inout_data;
                         if (IO_DATA_WIDTH > SDR_DATA_WIDTH) begin
-                            rd_full_data_cache[IO_DATA_WIDTH - 1:SDR_DATA_WIDTH] <= rd_full_data_cache[IO_DATA_WIDTH-SDR_DATA_WIDTH-1:0];
+                            rd_full_data_cache[IO_DATA_WIDTH - SDR_DATA_WIDTH - 1 : 0] <= rd_full_data_cache[IO_DATA_WIDTH - 1 : SDR_DATA_WIDTH];
                         end
                     end
                     if (cnt == (SDR_CL - 1 + SDR_RW_DATA_COUNT)) begin

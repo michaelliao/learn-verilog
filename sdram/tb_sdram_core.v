@@ -49,7 +49,6 @@ module tb_sdram_core();
         in_rd_req = 1'b0;
     end
 
-
     initial begin
         #429
         // write data 0xa1b2c3d4 to address 32'b10_1111101000000_100000110_0:
