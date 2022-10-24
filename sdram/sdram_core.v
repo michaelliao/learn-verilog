@@ -163,16 +163,17 @@ module sdram_core #(
         STATE_INIT_PRECHARGE    = 4'h2,
         STATE_INIT_AUTO_REFRESH = 4'h3,
         STATE_INIT_MR_SET       = 4'h4,
+        STATE_INIT_END          = 4'h5,
         // aref status:
-        STATE_AREF_PRECHARGE    = 4'h5,
-        STATE_AREF_AUTO_REFRESH = 4'h6,
-        STATE_AREF_DONE         = 4'h7,
+        STATE_AREF_PRECHARGE    = 4'h6,
+        STATE_AREF_AUTO_REFRESH = 4'h7,
+        STATE_AREF_DONE         = 4'h8,
         // write status:
-        STATE_WR_ACTIVE         = 4'h8,
-        STATE_WR_WRITE_A        = 4'h9,
+        STATE_WR_ACTIVE         = 4'h9,
+        STATE_WR_WRITE_A        = 4'ha,
         // read status:
-        STATE_RD_ACTIVE         = 4'ha,
-        STATE_RD_READ_A         = 4'hb,
+        STATE_RD_ACTIVE         = 4'hb,
+        STATE_RD_READ_A         = 4'hc,
         // idle state:
         STATE_IDLE              = 4'h0;
 
@@ -257,25 +258,23 @@ module sdram_core #(
                     if (cnt == CLK_TRCD - 1) begin
                         state <= STATE_RD_READ_A;
                         cnt <= CNT_0;
+                        rd_en <= 1'b1;
+                        rd_data_cache <= inout_data;
                     end else begin
                         cnt <= cnt + 1;
                     end
                 end
                 STATE_RD_READ_A: begin
                     // 读取延迟 SDR_CL + 读取次数 SDR_RW_DATA_COUNT + precharge时间 CLK_TRP
-                    if (cnt >= SDR_CL && cnt < (SDR_CL + SDR_RW_DATA_COUNT)) begin
+                    if (cnt >= SDR_CL && cnt < (SDR_CL + SDR_RW_DATA_COUNT - 1)) begin
                         rd_data_cache <= inout_data;
                         rd_full_data_cache[SDR_DATA_WIDTH-1:0] <= rd_data_cache;
                         if (IO_DATA_WIDTH > SDR_DATA_WIDTH) begin
                             rd_full_data_cache[IO_DATA_WIDTH-1:SDR_DATA_WIDTH] <= rd_full_data_cache[IO_DATA_WIDTH-SDR_DATA_WIDTH-1:0];
                         end
                     end
-                    if (cnt == (SDR_CL + SDR_RW_DATA_COUNT)) begin
-                        rd_en <= 1'b1;
-                    end else begin
-                        rd_en <= 1'b0;
-                    end
                     if (cnt == (SDR_CL + SDR_RW_DATA_COUNT + CLK_TRP)) begin
+                        rd_en <= 1'b0;
                         state <= STATE_IDLE;
                     end else begin
                         cnt <= cnt + 1;
@@ -368,11 +367,16 @@ module sdram_core #(
                 STATE_INIT_MR_SET: begin
                     // 保持当前状态CLK_TMRD个时钟周期:
                     if (cnt == CLK_TMRD - 1) begin
-                        // 初始化完成,进入IDLE状态:
-                        state <= STATE_IDLE;
+                        // 进入INIT_END状态:
+                        state <= STATE_INIT_END;
                     end else begin
                         cnt <= cnt + 1;
                     end
+                end
+
+                STATE_INIT_END: begin
+                    // 初始化完成,进入IDLE状态:
+                    state <= STATE_IDLE;
                 end
 
                 // aref status ////////////////////////////////////////////////
@@ -482,7 +486,7 @@ module sdram_core #(
     always @ (posedge clk or negedge rst_n) begin
         if (! rst_n) begin
             flag_init_end <= 1'b0;
-        end else if (state == STATE_INIT_MR_SET && cnt == CLK_TMRD - 1) begin
+        end else if (state == STATE_INIT_END) begin
             flag_init_end <= 1'b1;
         end
     end
