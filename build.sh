@@ -5,6 +5,7 @@ top_module=`pwd | awk -F/ '{print $NF}'`
 
 if ! [ -z "$1" ]; then
     top_module="$1"
+    top_module=${top_module%.v}
 fi
 
 src_file="$top_module.v"
