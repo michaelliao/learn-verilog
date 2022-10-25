@@ -1,6 +1,6 @@
 `timescale 1ns / 1ns
 
-module tb_sdram_core();
+module tb_sdram_ctrl();
 
     reg clk_100m;
     reg clk_100m_shift;
@@ -93,7 +93,7 @@ module tb_sdram_core();
         in_rd_req = 1'b0;
     end
 
-    sdram_core #(
+    sdram_ctrl #(
         .SDR_TPOWERUP (200), // speed power up from 200 us to 200 ns
         .SDR_INIT_AREF_COUNT (2), // aref x2 when init
         .SDR_REFRESH_CYCLE_TIME (6_400_000) // set refresh cycle to 6.4 ms to speed up test
@@ -131,7 +131,7 @@ module tb_sdram_core();
     );
 
     initial begin
-        $dumpfile("tb_sdram_core.vcd");
+        $dumpfile("tb_sdram_ctrl.vcd");
         $dumpvars(0, component);
         $dumpvars(0, sdram_inst);
         #3000

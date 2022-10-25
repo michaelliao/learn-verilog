@@ -1,71 +1,43 @@
-/******************************************************************************
-
-SDRAM read / write
-
-Micron MT48LC64M4A2 - 16 Meg x 4 x 4 banks
-
-256 Mbit = 32 MB
-
-******************************************************************************/
+// SDRAM read / write by rs232 port.
 
 module top (
     input wire clk,
     input wire rst_n,
-    input wire key_in,
-    output wire shcp,
-    output wire stcp,
-    output wire ds,
-    output wire oe
+    input wire in_rx_data,
+    input wire out_tx_data
 );
-    parameter C = 8'b01100011;
-    parameter E = 8'b01100001;
-    parameter F = 8'b01110001;
-    parameter H = 8'b10010001;
-    parameter L = 8'b11100011;
-    parameter O = 8'b00000011;
-    parameter P = 8'b00110001;
-    parameter S = 8'b01001001;
-    parameter U = 8'b10000011;
 
-    wire key1;
-    wire [1:0] state;
-    reg [47:0] data;
+    localparam
+        WRITE = 16'ha1b2,
+        READ = 16'hc3d4;
 
-    fsm fsm_inst (
-        .clk (clk),
-        .rst_n (rst_n),
-        .key_in (key1),
-        .out (state)
-    );
+    wire rx_fifo_out_en;
+    wire [7:0] rx_fifo_out;
+    reg [32+32+16-1:0] cache;
 
-    key_filter key_filter_inst (
-        .clk (clk),
-        .rst_n (rst_n),
-        .key_in (key_in),
-        .key_out (key1)
-    );
-
-	 words words_inst (
-        .clk (clk),
-        .rst_n (rst_n),
-        .data_in (data),
-        .shcp (shcp),
-        .stcp (stcp),
-        .ds (ds),
-        .oe (oe)
-    );
+    reg [31:0] addr;
+    reg [31:0] data;
 
     always @ (posedge clk or negedge rst_n) begin
         if (! rst_n) begin
-            data <= { E, E, E, E, E, E };
+            //
         end else begin
-            case (state)
-                2'b00: data <= { C, H, O, O, S, E };
-                2'b01: data <= { E, P, O, C, H, S };
-                2'b10: data <= { P, U, L, S, E, S };
-                2'b11: data <= { S, C, H, O, O, L };
-            endcase
+            //
         end
     end
+
+    // read data from uart:
+    uart_rx uart_rx_inst (
+    (
+        .clk (clk),
+        .rst_n (rst_n),
+        .in_data (in_rx_data),
+        .out_data (rx_fifo_out),
+        .out_en (rx_fifo_out_en)
+    );
+
+    // execute write and write into sdram:
+
+    // execute read and write to tx_fifo:
 
 endmodule
