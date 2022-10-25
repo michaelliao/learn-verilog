@@ -1,21 +1,22 @@
-// receive data
+// receive and send data
 // Baud = 9600, 14400, 19200, 38400, 57600, 115200
 
 module top (
-    input wire clk,
-    input wire rst_n,
-    input wire in_data,
-    output wire out_data,
-    output wire in_led_n,
-    output wire out_led_n
+    input clk,
+    input rst_n,
+    input in_data,
+    output out_data,
+    output in_led_n,
+    output out_led_n
 );
 
     wire [7:0] data;
     wire data_en;
-
     wire out_en;
 
+    // 接收数据指示灯计数器，>0时点亮LED，=0时熄灭:
     reg [23:0] cnt_in;
+    // 发送数据指示灯计数器，>0时点亮LED，=0时熄灭:
     reg [23:0] cnt_out;
 
     assign in_led_n = cnt_in > 0 ? 1'b0 : 1'b1;

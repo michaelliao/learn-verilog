@@ -14,14 +14,19 @@ module uart_rx #(
     output reg out_en
 );
 
-    parameter [12:0] CNT_0 = 'd0;
-    parameter [12:0] CNT_MAX = SYS_CLK / BAUD / 2 - 1;
+    localparam
+        MAX = SYS_CLK / BAUD - 1,
+        WIDTH = $clog2(MAX + 1);
 
-    parameter IDLE = 1'b0,
-              RECEIVING = 1'b1;
+    localparam [WIDTH-1:0] CNT_0 = 0;
+    localparam [WIDTH-1:0] CNT_MAX = MAX;
+
+    localparam
+        IDLE = 1'b0,
+        RECEIVING = 1'b1;
 
     reg status;
-    reg [12:0] cnt;
+    reg [WIDTH-1:0] cnt;
     reg [4:0] bps_cnt; // count for 0, 1, 2, ..., 15, 16, 17
     reg [7:0] data;
     reg parity;

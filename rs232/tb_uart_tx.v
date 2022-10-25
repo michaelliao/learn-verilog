@@ -9,7 +9,11 @@ module tb_uart_tx ();
     wire out_data;
     wire out_en;
 
-    uart_tx #(5_000_000) component(
+    uart_tx #(
+        .BAUD (5_000_000),
+        .SYS_CLK (50_000_000)
+    )
+    component(
         .clk (clk),
         .rst_n (rst_n),
         .in_data (in_data),

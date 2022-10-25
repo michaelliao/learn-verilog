@@ -8,7 +8,11 @@ module tb_uart_rx ();
     wire [7:0] out_data;
     wire out_en;
 
-    uart_rx #(2_500_000) component(
+    uart_rx #(
+        .BAUD (2_500_000),
+        .SYS_CLK (50_000_000)
+    )
+    component(
         .clk (clk),
         .rst_n (rst_n),
         .in_data (in_data),

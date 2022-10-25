@@ -13,16 +13,20 @@ module uart_tx #(
     output reg out_data,
     output wire out_en
 );
+    localparam
+        MAX = SYS_CLK / BAUD - 1,
+        WIDTH = $clog2(MAX + 1);
 
-    parameter [12:0] CNT_0 = 0;
-    parameter [12:0] CNT_MAX = SYS_CLK / BAUD - 1;
+    localparam [WIDTH-1:0] CNT_0 = 0;
+    localparam [WIDTH-1:0] CNT_MAX = MAX;
 
-    parameter IDLE = 1'b0,
-              TRANSFER = 1'b1;
+    localparam
+        IDLE = 1'b0,
+        TRANSFER = 1'b1;
 
     reg status;
     reg [3:0] bps_cnt; // count for 0, 1, 2, ..., 7, 8
-    reg [12:0] cnt;
+    reg [WIDTH-1:0] cnt;
     reg [7:0] data;
     reg parity;
 
