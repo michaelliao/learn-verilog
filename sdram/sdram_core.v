@@ -25,12 +25,17 @@ SDRAM FSM:
                           │
                           ▼
                    ┌─────────────┐
-                   │AUTO_REFRESH │
-                   └─────────────┘
+                   │AUTO_REFRESH │──┐ x8
+                   └─────────────┘◀─┘
                           │
                           ▼
                    ┌─────────────┐
                    │   MR_SET    │
+                   └─────────────┘
+                          │
+                          ▼
+                   ┌─────────────┐
+                   │  INIT_END   │
                    └─────────────┘
                           │
                           ▼
@@ -434,7 +439,7 @@ module sdram_core #(
                 // init / aref 输出 precharge 命令:
                 cmd = SDR_OP_PRECHARGE;
                 ba = SDR_BA_MAX;
-                addr = SDR_ADDR_MAX;
+                addr = SDR_ADDR_MAX; // A10 = 1 = All banks
             end
             STATE_INIT_AUTO_REFRESH, STATE_AREF_AUTO_REFRESH: begin
                 // init / aref 输出 auto refresh 命令:
@@ -465,12 +470,12 @@ module sdram_core #(
             STATE_INIT_MR_SET: begin
                 cmd = SDR_OP_LOAD_MR;
                 ba = SDR_BA_MIN;
-                // Reserved         = 000 = Reserved
-                // Write Burst Mode = 0   = Programmed Burst Length
-                // Operation Mode   = 00  = Standard Operation
-                // CAS Latency      = 011 = 3
-                // Burst Type       = 0   = Sequential
-                // Burst Length     = 001 = 2
+                // Reserved         = 000 = Reserved (保留)
+                // Write Burst Mode = 0   = Programmed Burst Length (指定突发长度)
+                // Operation Mode   = 00  = Standard Operation (标准模式)
+                // CAS Latency      = 011 = 3 (延迟3个时钟周期)
+                // Burst Type       = 0   = Sequential (顺序读写)
+                // Burst Length     = 001 = 2 (突发长度=2)
                 addr = {{SDR_ROW_WIDTH-10{1'b0}}, { 1'b0, 2'b00, SDR_MR_CAS_LATENCY, 1'b0, SDR_MR_BURST_LENGTH }};
             end
             default: begin
