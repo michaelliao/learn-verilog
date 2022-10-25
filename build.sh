@@ -1,5 +1,5 @@
 #!/bin/bash
-cd "$(dirname "$0")"
+echo "set pwd = $(pwd)"
 
 top_module=`pwd | awk -F/ '{print $NF}'`
 
