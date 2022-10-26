@@ -1,4 +1,4 @@
-// display words
+// display "SCHOOL"
 
 module top
 (

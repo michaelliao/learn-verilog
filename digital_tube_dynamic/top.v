@@ -1,6 +1,6 @@
 // display dynamic words
 
-module words
+module top
 (
     input clk,
     input rst_n,
