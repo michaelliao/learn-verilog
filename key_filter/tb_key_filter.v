@@ -8,7 +8,8 @@ module tb_key_filter ();
     wire key_out;
 
     key_filter #(
-        .SYS_CLK (500) // 500Hz
+        .SYS_CLK (500), // 500 Hz
+        .FILTER_TIME (20) // 20 ms
     )
     component(
         .clk (clk),

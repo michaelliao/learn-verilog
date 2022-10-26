@@ -1,9 +1,9 @@
-// 按键消抖: 计时20ms
+// 按键消抖
 
 module key_filter
 #(
-    parameter SYS_CLK = 50_000_000, // default to 50MHz
-    parameter FILTER_TIME = 20 // 毫秒, default to 20 ms
+    parameter SYS_CLK = 50_000_000, // default to 50 MHz
+    parameter FILTER_TIME = 50 // 毫秒, default to 50 ms
 )
 (
     input clk,
