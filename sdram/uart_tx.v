@@ -1,21 +1,33 @@
-// send data
-// Baud = 9600, 14400, 19200, 38400, 57600, 115200
+/******************************************************************************
+
+串口发送数据 (带奇偶校验)
+
+Baud = 9600, 14400, 19200, 38400, 57600, 115200
+
+输出波形在计数器计数点变化:
+
+   │     │     │     │     │     │     │     │     │     │     │
+   ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+───┐  0  ┌─────┐  0     0  ┌─────┐  0  ┌─────┐  0  ┌─────┐  0  ┌───
+   └─────┘  1  └───────────┘  1  └─────┘  1  └─────┘  1  └─────┘
+
+******************************************************************************/
 
 module uart_tx #(
-    parameter BAUD = 9600, // default to 9600
-    parameter SYS_CLK = 50_000_000 // default to 50MHz
+    parameter BAUD = 9600, // 波特率, 默认值 9600
+    parameter SYS_CLK = 50_000_000 // 时钟频率, 默认值 50MHz
 )
 (
-    input wire clk,
-    input wire rst_n,
-    input wire [7:0] in_data,
-    input wire in_en,
-    output reg out_data,
-    output wire out_en
+    input clk,
+    input rst_n,
+    input [7:0] in_data, // 待发送数据
+    input in_en, // 发送信号=1有效
+    output reg out_data, // 输出串口数据信号
+    output out_en // 输出信号=1有效
 );
     localparam
-        MAX = SYS_CLK / BAUD - 1,
-        WIDTH = $clog2(MAX + 1);
+        MAX = SYS_CLK / BAUD - 1, // 计数器最大值
+        WIDTH = $clog2(MAX + 1); // 计数器位宽
 
     localparam [WIDTH-1:0] CNT_0 = 0;
     localparam [WIDTH-1:0] CNT_MAX = MAX;
@@ -43,7 +55,7 @@ module uart_tx #(
         end else begin
             if (status == IDLE) begin
                 if (in_en == 1'b1) begin
-                    // start transfer:
+                    // 输入数据有效时准备传输:
                     status <= TRANSFER;
                     bps_cnt <= 4'd1;
                     cnt <= CNT_MAX;
@@ -136,7 +148,7 @@ module uart_tx #(
                         end
                     endcase
                 end else begin
-                    cnt <= cnt + 1'b1;
+                    cnt <= cnt + 1;
                     bps_cnt <= bps_cnt;
                     out_data <= out_data;
                     status <= TRANSFER;

@@ -1,22 +1,34 @@
-// receive data
-// Baud = 9600, 14400, 19200, 38400, 57600, 115200
+/******************************************************************************
+
+串口接收数据 (带奇偶校验)
+
+Baud = 9600, 14400, 19200, 38400, 57600, 115200
+
+计数器采样点: 在上下沿的中点采样
+
+   │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │
+   ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼
+───┐  0  ┌─────┐  0     0  ┌─────┐  0  ┌─────┐  0  ┌─────┐  0  ┌───
+   └─────┘  1  └───────────┘  1  └─────┘  1  └─────┘  1  └─────┘
+
+******************************************************************************/
 
 module uart_rx #(
-    parameter BAUD = 'd9600, // default to 9600
-    parameter SYS_CLK = 'd50_000_000 // default to 50MHz
+    parameter BAUD = 9600, // 波特率, 默认值 9600
+    parameter SYS_CLK = 50_000_000 // 时钟频率, 默认值 50MHz
 )
 (
-    input wire clk,
-    input wire rst_n,
-    input wire in_data,
-    output wire [7:0] out_data,
-    output wire out_parity,
-    output reg out_en
+    input clk,
+    input rst_n,
+    input in_data, // 输入串口数据
+    output [7:0] out_data, // 输出接收数据
+    output out_parity, // 输出奇偶效验
+    output reg out_en // 输出=1有效
 );
 
     localparam
-        MAX = SYS_CLK / BAUD - 1,
-        WIDTH = $clog2(MAX + 1);
+        MAX = SYS_CLK / BAUD / 2 - 1, // 计数器最大值
+        WIDTH = $clog2(MAX + 1); // 计数器位宽
 
     localparam [WIDTH-1:0] CNT_0 = 0;
     localparam [WIDTH-1:0] CNT_MAX = MAX;
@@ -30,7 +42,7 @@ module uart_rx #(
     reg [4:0] bps_cnt; // count for 0, 1, 2, ..., 15, 16, 17
     reg [7:0] data;
     reg parity;
-    reg [2:0] rx_detect;
+    reg [2:0] rx_detect; // 延迟两拍采样
 
     assign out_data = out_en == 1'b1 ? data : 8'd0;
     assign out_parity = out_en == 1'b1 ? parity : 1'b0;
@@ -109,7 +121,7 @@ module uart_rx #(
                         end
                     endcase
                 end else begin
-                    cnt <= cnt + 1'b1;
+                    cnt <= cnt + 1;
                     bps_cnt <= bps_cnt;
                     status <= RECEIVING;
                     data <= data;
