@@ -1,4 +1,4 @@
-`timescale 1ns/1ns
+`timescale 1ms/1ms
 
 module tb_key_filter ();
 
@@ -7,7 +7,10 @@ module tb_key_filter ();
     reg key_in;
     wire key_out;
 
-    key_filter #(4) component(
+    key_filter #(
+        .SYS_CLK (500) // 500Hz
+    )
+    component(
         .clk (clk),
         .rst_n (rst_n),
         .key_in (key_in),
@@ -17,34 +20,33 @@ module tb_key_filter ();
     initial begin
         clk = 1'b1;
         rst_n = 1'b0;
-        key_in = 1'b1;
-        #10
+        #15
         rst_n = 1'b1;
+        #2
+        key_in = 1'b0;
+        #4
+        key_in = 1'b1;
+        #4
+        key_in = 1'b0;
+        #40
+        key_in = 1'b1;
+        #5
+        key_in = 1'b0;
+        #4
+        key_in = 1'b1;
+        #5
+        key_in = 1'b0;
+        #50
+        key_in = 1'b1;
+        #3
+        key_in = 1'b0;
+        #4
+        key_in = 1'b1;
+        #5
+        key_in = 1'b0;
+        #25
+        key_in = 1'b1;
         #10
-        key_in = 1'b0;
-        #4
-        key_in = 1'b1;
-        #5
-        key_in = 1'b0;
-        #4
-        key_in = 1'b1;
-        #5
-        key_in = 1'b0;
-        #4
-        key_in = 1'b1;
-        #5
-        key_in = 1'b0;
-        #500
-        key_in = 1'b1;
-        #5
-        key_in = 1'b0;
-        #4
-        key_in = 1'b1;
-        #5
-        key_in = 1'b0;
-        #4
-        key_in = 1'b1;
-        #500
         $finish;
     end
 

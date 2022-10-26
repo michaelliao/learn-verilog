@@ -37,8 +37,6 @@ module top (
 
     reg [47:0] data;
 
-    reg [15:0] cnt16; // 0 ~ 65535
-
     reg [7:0] seg;
     reg [5:0] sel;
 
@@ -66,7 +64,7 @@ module top (
     // test not using key_filter for key 0:
     assign key0 = key_in0;
 
-    disp_driver disp_driver_instance (
+    digital_tube_display digital_tube_display_inst (
         .clk (clk),
         .rst_n (rst_n),
         .seg (seg),
@@ -75,6 +73,14 @@ module top (
         .stcp (stcp),
         .ds (ds),
         .oe (oe)
+    );
+
+    digital_tube_data digital_tube_data_inst (
+        .clk (clk),
+        .rst_n (rst_n),
+        .data (data),
+        .seg (seg),
+        .sel (sel)
     );
 
     always @ (posedge clk or negedge rst_n) begin
@@ -148,43 +154,6 @@ module top (
                 default: data[31:24] <= E;
             endcase
             data[47:32] <= { E, E };
-        end
-    end
-
-    always @ (posedge clk or negedge rst_n) begin
-        if (rst_n == 1'b0) begin
-            cnt16 <= 16'b0;
-            sel <= 6'b000_001;
-        end else begin
-            cnt16 <= cnt16 + 16'b1;
-            if (cnt16 == 16'hffff) begin
-                case (sel)
-                    6'b000_001: begin
-                        sel <= 6'b000_010;
-                        seg <= data[15:8];
-                    end
-                    6'b000_010: begin
-                        sel <= 6'b000_100;
-                        seg <= data[23:16];
-                    end
-                    6'b000_100: begin
-                        sel <= 6'b001_000;
-                        seg <= data[31:24];
-                    end
-                    6'b001_000: begin
-                        sel <= 6'b010_000;
-                        seg <= data[39:32];
-                    end
-                    6'b010_000: begin
-                        sel <= 6'b100_000;
-                        seg <= data[47:40];
-                    end
-                    default: begin
-                        sel <= 6'b000_001;
-                        seg <= data[7:0];
-                    end
-                endcase
-            end
         end
     end
 

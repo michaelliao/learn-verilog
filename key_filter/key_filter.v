@@ -1,38 +1,47 @@
-// key filter
+// 按键消抖: 计时20ms
 
 module key_filter
 #(
-    parameter CNT_WIDTH = 20
+    parameter SYS_CLK = 50_000_000 // default to 50MHz
 )
 (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire key_in,
+    input clk,
+    input rst_n,
+    input key_in,
     output reg key_out
 );
 
-    parameter [CNT_WIDTH-1:0] CNT_MAX = (1 << CNT_WIDTH)-1;
+    // 根据时钟频率计算20ms内计数器最大值:
+    localparam
+        CLK_TIME = 1_000_000_000 / SYS_CLK,
+        CLK_MAX = 20_000_000 / CLK_TIME, // 20ms内计数器最大值
+        CNT_WIDTH = $clog2(CLK_MAX + 1); // 计数器位宽
+
+    localparam [CNT_WIDTH-1:0] CNT_0 = 0;
+    localparam [CNT_WIDTH-1:0] CNT_MAX = CLK_MAX;
 
     reg [CNT_WIDTH-1:0] cnt;
 
     always @ (posedge clk or negedge rst_n) begin
-        if (rst_n == 1'b0)
-            cnt <= 20'b0;
-        else begin
-            if (key_in == 1'b1)
+        if (! rst_n) begin
+            cnt <= CNT_0;
+        end else begin
+            if (key_in == 1'b1) begin
                 // key unpressed, keep 0:
-                cnt <= 20'b0;
-            else
+                cnt <= CNT_0;
+            end else begin
                 // key pressed, cnt = 0, 1, 2, ... , MAX-1, MAX, MAX, ...
-                cnt <= (cnt == CNT_MAX) ? CNT_MAX : cnt + 1'b1;
+                cnt <= (cnt == CNT_MAX) ? CLK_MAX : cnt + 1;
+            end
         end
     end
 
     always @ (posedge clk or negedge rst_n) begin
-        if (rst_n == 1'b0)
+        if (! rst_n) begin
             key_out <= 1'b1;
-        else
+        end else begin
             // key out is triggered at MAX-1:
             key_out <= (cnt == CNT_MAX - 1) ? 1'b0 : 1'b1;
+        end
     end
 endmodule
