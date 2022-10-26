@@ -8,10 +8,11 @@ module fsm
     output reg [1:0] out
 );
 
-    parameter S1 = 2'b00,
-              S2 = 2'b01,
-              S3 = 2'b10,
-              S4 = 2'b11;
+    localparam
+        S1 = 2'b00,
+        S2 = 2'b01,
+        S3 = 2'b10,
+        S4 = 2'b11;
 
     // current state:
     reg [1:0] cs;
@@ -24,26 +25,18 @@ module fsm
                 S1: begin
                     if (!key_in)
                         cs <= S2;
-                    else
-                        cs <= cs;
                 end
                 S2: begin
                     if (!key_in)
                         cs <= S3;
-                    else
-                        cs <= cs;
                 end
                 S3: begin
                     if (!key_in)
                         cs <= S4;
-                    else
-                        cs <= cs;
                 end
                 S4: begin
                     if (!key_in)
                         cs <= S1;
-                    else
-                        cs <= cs;
                 end
                 default: cs <= S1;
             endcase

@@ -25,8 +25,8 @@ module top (
 
     reg [47:0] data;
 
-    reg [7:0] seg;
-    reg [5:0] sel;
+    wire [7:0] seg;
+    wire [5:0] sel;
 
     fsm fsm_inst (
         .clk (clk),
