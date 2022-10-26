@@ -1,29 +1,31 @@
-// display number
+// 按键消抖测试
+// key0 无消抖, key1 ~ key3 带消抖, 计数循环 0 ~ 9
 
 module top (
-    input wire clk,
-    input wire rst_n,
-    input wire key_in3,
-    input wire key_in2,
-    input wire key_in1,
-    input wire key_in0,
-    output wire shcp,
-    output wire stcp,
-    output wire ds,
-    output wire oe
+    input clk,
+    input rst_n,
+    input key_in3,
+    input key_in2,
+    input key_in1,
+    input key_in0,
+    output shcp,
+    output stcp,
+    output ds,
+    output oe
 );
 
-    parameter N0 = 8'b00000011;
-    parameter N1 = 8'b10011111;
-    parameter N2 = 8'b00100101;
-    parameter N3 = 8'b00001101;
-    parameter N4 = 8'b10011001;
-    parameter N5 = 8'b01001001;
-    parameter N6 = 8'b01000001;
-    parameter N7 = 8'b00011111;
-    parameter N8 = 8'b00000001;
-    parameter N9 = 8'b00001001;
-    parameter E = 8'b01100001;
+    localparam
+        N0 = 8'b00000011,
+        N1 = 8'b10011111,
+        N2 = 8'b00100101,
+        N3 = 8'b00001101,
+        N4 = 8'b10011001,
+        N5 = 8'b01001001,
+        N6 = 8'b01000001,
+        N7 = 8'b00011111,
+        N8 = 8'b00000001,
+        N9 = 8'b00001001,
+        E = 8'b01100001;
 
     wire key3;
     wire key2;
@@ -37,8 +39,8 @@ module top (
 
     reg [47:0] data;
 
-    reg [7:0] seg;
-    reg [5:0] sel;
+    wire [7:0] seg;
+    wire [5:0] sel;
 
     key_filter key_filter_3 (
         .clk (clk),
@@ -61,7 +63,7 @@ module top (
         .key_out (key1)
     );
 
-    // test not using key_filter for key 0:
+    // not using key_filter for key 0:
     assign key0 = key_in0;
 
     digital_tube_display digital_tube_display_inst (

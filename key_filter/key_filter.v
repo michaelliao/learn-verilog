@@ -2,7 +2,8 @@
 
 module key_filter
 #(
-    parameter SYS_CLK = 50_000_000 // default to 50MHz
+    parameter SYS_CLK = 50_000_000, // default to 50MHz
+    parameter FILTER_TIME = 20 // 毫秒, default to 20 ms
 )
 (
     input clk,
@@ -13,8 +14,8 @@ module key_filter
 
     // 根据时钟频率计算20ms内计数器最大值:
     localparam
-        CLK_TIME = 1_000_000_000 / SYS_CLK,
-        CLK_MAX = 20_000_000 / CLK_TIME, // 20ms内计数器最大值
+        CLK_TIME = 1_000_000_000 / SYS_CLK, // 一个时钟周期的ns
+        CLK_MAX = FILTER_TIME * 1_000_000 / CLK_TIME, // 20ms内计数器最大值
         CNT_WIDTH = $clog2(CLK_MAX + 1); // 计数器位宽
 
     localparam [CNT_WIDTH-1:0] CNT_0 = 0;
