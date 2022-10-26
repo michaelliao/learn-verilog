@@ -2,16 +2,16 @@
 // Baud = 9600, 14400, 19200, 38400, 57600, 115200
 
 module uart_tx #(
-    parameter BAUD = 9600, // default to 9600
-    parameter SYS_CLK = 50_000_000 // default to 50MHz
+    parameter BAUD = 9600, // 波特率, 默认值 9600
+    parameter SYS_CLK = 50_000_000 // 时钟频率, 默认值 50MHz
 )
 (
     input clk,
     input rst_n,
-    input [7:0] in_data,
-    input in_en,
-    output reg out_data,
-    output out_en
+    input [7:0] in_data, // 待发送数据
+    input in_en, // 发送信号=1有效
+    output reg out_data, // 输出串口数据信号
+    output out_en // 输出信号=1有效
 );
     localparam
         MAX = SYS_CLK / BAUD - 1,
@@ -43,7 +43,7 @@ module uart_tx #(
         end else begin
             if (status == IDLE) begin
                 if (in_en == 1'b1) begin
-                    // start transfer:
+                    // 输入数据有效时准备传输:
                     status <= TRANSFER;
                     bps_cnt <= 4'd1;
                     cnt <= CNT_MAX;

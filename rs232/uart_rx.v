@@ -2,16 +2,16 @@
 // Baud = 9600, 14400, 19200, 38400, 57600, 115200
 
 module uart_rx #(
-    parameter BAUD = 9600, // default to 9600
-    parameter SYS_CLK = 50_000_000 // default to 50MHz
+    parameter BAUD = 9600, // 波特率, 默认值 9600
+    parameter SYS_CLK = 50_000_000 // 时钟频率, 默认值 50MHz
 )
 (
     input clk,
     input rst_n,
-    input in_data,
-    output [7:0] out_data,
-    output out_parity,
-    output reg out_en
+    input in_data, // 输入串口数据
+    output [7:0] out_data, // 输出接收数据
+    output out_parity, // 输出奇偶效验
+    output reg out_en // 输出=1有效
 );
 
     localparam
@@ -30,7 +30,7 @@ module uart_rx #(
     reg [4:0] bps_cnt; // count for 0, 1, 2, ..., 15, 16, 17
     reg [7:0] data;
     reg parity;
-    reg [2:0] rx_detect;
+    reg [2:0] rx_detect; // 延迟两拍采样
 
     assign out_data = out_en == 1'b1 ? data : 8'd0;
     assign out_parity = out_en == 1'b1 ? parity : 1'b0;
