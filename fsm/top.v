@@ -1,27 +1,32 @@
 // display word by FSM
 
 module top (
-    input wire clk,
-    input wire rst_n,
-    input wire key_in,
-    output wire shcp,
-    output wire stcp,
-    output wire ds,
-    output wire oe
+    input clk,
+    input rst_n,
+    input key_in,
+    output shcp,
+    output stcp,
+    output ds,
+    output oe
 );
-    parameter C = 8'b01100011;
-    parameter E = 8'b01100001;
-    parameter F = 8'b01110001;
-    parameter H = 8'b10010001;
-    parameter L = 8'b11100011;
-    parameter O = 8'b00000011;
-    parameter P = 8'b00110001;
-    parameter S = 8'b01001001;
-    parameter U = 8'b10000011;
+    localparam
+        C = 8'b01100011,
+        E = 8'b01100001,
+        F = 8'b01110001,
+        H = 8'b10010001,
+        L = 8'b11100011,
+        O = 8'b00000011,
+        P = 8'b00110001,
+        S = 8'b01001001,
+        U = 8'b10000011;
 
     wire key1;
     wire [1:0] state;
+
     reg [47:0] data;
+
+    reg [7:0] seg;
+    reg [5:0] sel;
 
     fsm fsm_inst (
         .clk (clk),
@@ -37,14 +42,23 @@ module top (
         .key_out (key1)
     );
 
-	 words words_inst (
+    digital_tube_display digital_tube_display_inst (
         .clk (clk),
         .rst_n (rst_n),
-        .data_in (data),
+        .seg (seg),
+        .sel (sel),
         .shcp (shcp),
         .stcp (stcp),
         .ds (ds),
         .oe (oe)
+    );
+
+    digital_tube_data digital_tube_data_inst (
+        .clk (clk),
+        .rst_n (rst_n),
+        .data (data),
+        .seg (seg),
+        .sel (sel)
     );
 
     always @ (posedge clk or negedge rst_n) begin
