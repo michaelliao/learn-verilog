@@ -1,10 +1,10 @@
-// digital tube data
+// 6位数码管输入数据
 
 module digital_tube_data
 (
     input clk,
     input rst_n,
-    input [47:0] data,
+    input [47:0] data, // 输入数据 8 x 6 = 48 bit
     output reg [7:0] seg,
     output reg [5:0] sel
 );

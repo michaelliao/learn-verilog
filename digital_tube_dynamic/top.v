@@ -51,6 +51,7 @@ module words
             cnt26 <= 26'b0;
         end else begin
             cnt26 <= cnt26 + 26'b1;
+            // 每隔约1秒更新数据:
             if (cnt26[25] == 1'b1)
                 data <= { H, E, L, L, O, X };
             else

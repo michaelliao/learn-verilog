@@ -1,15 +1,37 @@
-// digital tube display
+/******************************************************************************
+
+Digital Tube Display 数码管动态显示
+
+位选信号 a-h: 0点亮
+
+┌───────────────┐
+│       a       │
+├───┬───────┬───┤
+│   │       │   │
+│ f │       │ b │
+│   │       │   │
+├───┴───────┴───┤
+│       g       │
+├───┬───────┬───┤
+│   │       │   │
+│ e │       │ c │
+│   │       │   │
+├───┴───────┴───┤  ┌───┐
+│       d       │  │ h │
+└───────────────┘  └───┘
+
+******************************************************************************/
 
 module digital_tube_display
 (
     input clk,
     input rst_n,
-    input [7:0] seg,
-    input [5:0] sel,
-    output reg shcp,
-    output reg stcp,
-    output reg ds,
-    output oe
+    input [7:0] seg, // 数码管位选信号
+    input [5:0] sel, // 数码管段选信号
+    output reg shcp, // 移位寄存器时钟
+    output reg stcp, // 存储寄存器时钟
+    output reg ds, // 串行数据输出至 74HC595 芯片
+    output oe // 始能信号 =0 有效
 );
 
     reg [1:0] cnt;
