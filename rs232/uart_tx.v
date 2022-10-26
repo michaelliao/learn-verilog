@@ -6,12 +6,12 @@ module uart_tx #(
     parameter SYS_CLK = 50_000_000 // default to 50MHz
 )
 (
-    input wire clk,
-    input wire rst_n,
-    input wire [7:0] in_data,
-    input wire in_en,
+    input clk,
+    input rst_n,
+    input [7:0] in_data,
+    input in_en,
     output reg out_data,
-    output wire out_en
+    output out_en
 );
     localparam
         MAX = SYS_CLK / BAUD - 1,
@@ -136,7 +136,7 @@ module uart_tx #(
                         end
                     endcase
                 end else begin
-                    cnt <= cnt + 1'b1;
+                    cnt <= cnt + 1;
                     bps_cnt <= bps_cnt;
                     out_data <= out_data;
                     status <= TRANSFER;

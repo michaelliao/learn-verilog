@@ -2,20 +2,20 @@
 // Baud = 9600, 14400, 19200, 38400, 57600, 115200
 
 module uart_rx #(
-    parameter BAUD = 'd9600, // default to 9600
-    parameter SYS_CLK = 'd50_000_000 // default to 50MHz
+    parameter BAUD = 9600, // default to 9600
+    parameter SYS_CLK = 50_000_000 // default to 50MHz
 )
 (
-    input wire clk,
-    input wire rst_n,
-    input wire in_data,
-    output wire [7:0] out_data,
-    output wire out_parity,
+    input clk,
+    input rst_n,
+    input in_data,
+    output [7:0] out_data,
+    output out_parity,
     output reg out_en
 );
 
     localparam
-        MAX = SYS_CLK / BAUD - 1,
+        MAX = SYS_CLK / BAUD / 2 - 1,
         WIDTH = $clog2(MAX + 1);
 
     localparam [WIDTH-1:0] CNT_0 = 0;
@@ -109,7 +109,7 @@ module uart_rx #(
                         end
                     endcase
                 end else begin
-                    cnt <= cnt + 1'b1;
+                    cnt <= cnt + 1;
                     bps_cnt <= bps_cnt;
                     status <= RECEIVING;
                     data <= data;
