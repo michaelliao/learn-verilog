@@ -12,10 +12,10 @@ module key_filter
     output reg key_out
 );
 
-    // 根据时钟频率计算20ms内计数器最大值:
+    // 根据时钟频率计算指定时间内计数器最大值:
     localparam
-        CLK_TIME = 1_000_000_000 / SYS_CLK, // 一个时钟周期的ns
-        CLK_MAX = FILTER_TIME * 1_000_000 / CLK_TIME, // 20ms内计数器最大值
+        CLK_TIME = 1_000_000_000 / SYS_CLK, // 一个时钟周期的耗时ns
+        CLK_MAX = FILTER_TIME * 1_000_000 / CLK_TIME, // 计数器最大值
         CNT_WIDTH = $clog2(CLK_MAX + 1); // 计数器位宽
 
     localparam [CNT_WIDTH-1:0] CNT_0 = 0;
@@ -31,7 +31,7 @@ module key_filter
                 // key unpressed, keep 0:
                 cnt <= CNT_0;
             end else begin
-                // key pressed, cnt = 0, 1, 2, ... , MAX-1, MAX, MAX, ...
+                // key pressed, cnt = 0, 1, 2, ... , MAX-1, MAX, MAX, ... 计数到最大值后保持
                 cnt <= (cnt == CNT_MAX) ? CLK_MAX : cnt + 1;
             end
         end
