@@ -1,6 +1,6 @@
 // sync fifo
 
-module sync_fifo #(
+module scfifo #(
     parameter DATA_BITS = 8,
     parameter SIZE = 8 // size must be 2, 4, 8, 16, ...
 )

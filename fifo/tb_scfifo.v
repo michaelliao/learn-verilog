@@ -1,6 +1,6 @@
 `timescale 1ns / 1ns
 
-module tb_sync_fifo();
+module tb_scfifo();
 
     reg clk;
     reg rst_n;
@@ -131,7 +131,7 @@ module tb_sync_fifo();
         #100;
     end
 
-    sync_fifo component (
+    scfifo component (
         .clk (clk),
         .rst_n (rst_n),
         .rdreq (rdreq),
@@ -143,7 +143,7 @@ module tb_sync_fifo();
     );
 
     initial begin
-        $dumpfile("tb_sync_fifo.vcd");
+        $dumpfile("tb_scfifo.vcd");
         $dumpvars(0, component);
         #1500
         $finish;
