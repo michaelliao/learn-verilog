@@ -1,11 +1,27 @@
 @echo off
 
 set pwd=%cd%
+echo set pwd = %pwd%
+
+set args=0
+for %%x in (%*) do (
+    set /A args+=1
+)
+
+if %args% Geq 1 goto :SET_TOP_MODULE_BY_ARG
 
 for %%A in ("%pwd%") do (
     set top_module=%%~nxA
 )
+goto :SET_TOP_MODULE_OK
 
+:SET_TOP_MODULE_BY_ARG
+set top_module=%1
+if "%top_module:~-2%" == ".v" (
+    set top_module=%top_module:~0,-2%
+)
+
+:SET_TOP_MODULE_OK
 echo set top module = %top_module%
 
 set src_file=%top_module%.v
@@ -44,4 +60,3 @@ echo source file %src_file% not found.
 goto :END
 
 :END
-pause
