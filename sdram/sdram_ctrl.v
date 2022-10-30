@@ -1,16 +1,6 @@
 /******************************************************************************
 
-SDRAM auto refresh
-
-1. Precharge all banks
-   A10 = 1
-   Wait tRP = 20 ns
-
-2. Auto refresh
-   Command = AUTO_REF
-   Wait tRFC = 70 ns
-
-3. Auto refresh (2nd)
+SDRAM controller
 
 SDRAM FSM:
 
@@ -72,6 +62,7 @@ module sdram_ctrl #(
 )
 (
     input clk,
+    input clk_for_sdr,
     input rst_n,
     inout [SDR_DATA_WIDTH-1:0] inout_data, // SDRAM数据线
 
@@ -89,6 +80,7 @@ module sdram_ctrl #(
     output out_wr_ack, // 已接受写请求(写输入采样已完成)
     output out_wr_done, // 写数据完成
 
+    output sdr_clk,
     output reg [3:0] cmd,
     output reg [SDR_BA_WIDTH-1:0] ba, // bank
     output reg [SDR_ROW_WIDTH-1:0] addr
@@ -192,6 +184,9 @@ module sdram_ctrl #(
     reg [SDR_DQM_WIDTH-1:0] wr_dqm_out;
     reg wr_en;
     reg rd_en;
+
+    // sdram clock:
+    assign sdr_clk = clk_for_sdr;
 
     assign inout_data = wr_en ? wr_data_cache : {SDR_DATA_WIDTH{1'bz}};
     assign out_wr_dqm = wr_en ? wr_dqm_out : {SDR_DQM_WIDTH{1'b0}};
