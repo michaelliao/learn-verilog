@@ -1,14 +1,19 @@
 // data write to fifo, then read and send
 
-module tx_fsm (
+module tx_fsm #(
+    parameter BAUD = 9600, // 波特率, 默认值 9600
+    parameter SYS_CLK = 50_000_000 // 时钟频率, 默认值 50MHz
+)
+(
     input clk_wr,
     input clk_rd,
     input wr_rst_n,
     input rd_rst_n,
     input wr_req,
     input [31:0] wr_data,
-    output wr_full,
-    output out_tx_data
+    output rd_empty,
+    output out_tx_data,
+    output out_tx_en
 );
     // fsm
     localparam
@@ -18,8 +23,6 @@ module tx_fsm (
 
     reg [1:0] state;
     reg rd_req;
-    wire rd_empty;
-    wire tx_sending;
     reg tx_data_en;
     wire [7:0] rd_data;
     reg [7:0] rd_data_cache;
@@ -94,12 +97,16 @@ module tx_fsm (
         .wrfull (wr_full)
 	);
 
-    uart_tx uart_tx_inst (
+    uart_tx #(
+        .BAUD (BAUD),
+        .SYS_CLK (SYS_CLK)
+    )
+    uart_tx_inst (
         .clk (clk_rd),
         .rst_n (rd_rst_n),
         .in_data (rd_data_cache),
         .in_en (tx_data_en),
-        .out_en (tx_sending),
+        .out_en (out_tx_en),
         .out_data (out_tx_data)
     );
 
