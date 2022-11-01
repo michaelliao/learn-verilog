@@ -18,8 +18,9 @@ module tx_fsm #(
     // fsm
     localparam
         IDLE  = 2'b00,
-        FETCH = 2'b01,
-        SEND  = 2'b11;
+        RDREQ = 2'b01,
+        FETCH = 2'b11,
+        SEND  = 2'b10;
 
     reg [1:0] state;
     reg rd_req;
@@ -35,11 +36,16 @@ module tx_fsm #(
         end else begin
             case (state)
             IDLE: begin
-                if (! rd_empty && ! tx_sending) begin
-                    // 在下一个周期读取fifo:
-                    state <= FETCH;
+                if (! rd_empty && ! out_tx_en) begin
+                    // 在下一个周期请求读取fifo:
+                    state <= RDREQ;
                     rd_req <= 1'b1;
                 end
+            end
+            RDREQ: begin
+                // 在下一个周期读取fifo:
+                rd_req <= 1'b0;
+                state <= FETCH;
             end
             FETCH: begin
                 // 读fifo:
@@ -70,15 +76,16 @@ module tx_fsm #(
         end else begin
             if (wr_req) begin
                 wr_data_cache <= wr_data;
-                wr_data_cnt <= 3'd4;
+                wr_data_cnt <= 3'd5;
                 wr_data_req <= 1'b1;
-            end
-            // 4, 5, 6, 7:
-            if (wr_data_cnt > 0) begin
-                wr_data_cache[31:8] <= wr_data_cache[23:0];
-                wr_data_cnt <= wr_data_cnt + 1;
             end else begin
-                wr_data_req <= 1'b0;
+                // 5, 6, 7:
+                if (wr_data_cnt > 0) begin
+                    wr_data_cache[31:8] <= wr_data_cache[23:0];
+                    wr_data_cnt <= wr_data_cnt + 1;
+                end else begin
+                    wr_data_req <= 1'b0;
+                end
             end
         end
     end

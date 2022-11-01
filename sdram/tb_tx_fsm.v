@@ -50,24 +50,24 @@ module tb_tx_fsm();
         .out_tx_en (out_tx_en)
     );
 
-    reg [31:0] sdr_data;
-    reg [7:0] one_byte;
-
     initial begin
-        wr_req = 1'b0;
-        // 输入数据: 0xa1b2c3d4
-        wr_data = 32'ha1b2c3d4;
-        #55
-        repeat (4) begin
-            one_byte = wr_data[31:24];
-            wr_data = wr_data << 8;
+        tx_send(32'ha1b2c3d4);
+        tx_send(32'h9f7e5d3c);
+        $stop;
+    end
+
+    task tx_send;
+        input reg [31:0] tx_task_data;
+        begin
+            wr_req = 1'b0;
+            wr_data = tx_task_data;
+            #55;
             wr_req <= 1'b1;
             #10;
+            wr_req <= 1'b0;
+            #10000;
         end
-        wr_req <= 1'b0;
-        #30000;
-        $finish;
-    end
+    endtask
 
     initial begin
         $dumpfile("tb_tx_fsm.vcd");
