@@ -85,9 +85,9 @@ module fifo_async_8bit (
 		dcfifo_component.lpm_type = "dcfifo",
 		dcfifo_component.lpm_width = 8,
 		dcfifo_component.lpm_widthu = 3,
-		dcfifo_component.overflow_checking = "OFF",
+		dcfifo_component.overflow_checking = "ON",
 		dcfifo_component.rdsync_delaypipe = 4,
-		dcfifo_component.underflow_checking = "OFF",
+		dcfifo_component.underflow_checking = "ON",
 		dcfifo_component.use_eab = "ON",
 		dcfifo_component.wrsync_delaypipe = 4;
 
@@ -110,11 +110,11 @@ endmodule
 // Retrieval info: PRIVATE: LE_BasedFIFO NUMERIC "0"
 // Retrieval info: PRIVATE: LegacyRREQ NUMERIC "1"
 // Retrieval info: PRIVATE: MAX_DEPTH_BY_9 NUMERIC "0"
-// Retrieval info: PRIVATE: OVERFLOW_CHECKING NUMERIC "1"
+// Retrieval info: PRIVATE: OVERFLOW_CHECKING NUMERIC "0"
 // Retrieval info: PRIVATE: Optimize NUMERIC "0"
 // Retrieval info: PRIVATE: RAM_BLOCK_TYPE NUMERIC "0"
 // Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
-// Retrieval info: PRIVATE: UNDERFLOW_CHECKING NUMERIC "1"
+// Retrieval info: PRIVATE: UNDERFLOW_CHECKING NUMERIC "0"
 // Retrieval info: PRIVATE: UsedW NUMERIC "1"
 // Retrieval info: PRIVATE: Width NUMERIC "8"
 // Retrieval info: PRIVATE: dc_aclr NUMERIC "0"
@@ -136,9 +136,9 @@ endmodule
 // Retrieval info: CONSTANT: LPM_TYPE STRING "dcfifo"
 // Retrieval info: CONSTANT: LPM_WIDTH NUMERIC "8"
 // Retrieval info: CONSTANT: LPM_WIDTHU NUMERIC "3"
-// Retrieval info: CONSTANT: OVERFLOW_CHECKING STRING "OFF"
+// Retrieval info: CONSTANT: OVERFLOW_CHECKING STRING "ON"
 // Retrieval info: CONSTANT: RDSYNC_DELAYPIPE NUMERIC "4"
-// Retrieval info: CONSTANT: UNDERFLOW_CHECKING STRING "OFF"
+// Retrieval info: CONSTANT: UNDERFLOW_CHECKING STRING "ON"
 // Retrieval info: CONSTANT: USE_EAB STRING "ON"
 // Retrieval info: CONSTANT: WRSYNC_DELAYPIPE NUMERIC "4"
 // Retrieval info: USED_PORT: data 0 0 8 0 INPUT NODEFVAL "data[7..0]"

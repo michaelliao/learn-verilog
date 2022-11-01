@@ -73,6 +73,8 @@ module rx_fsm #(
             READY: begin
                 if (op_ack) begin
                     op <= 8'b0;
+                    address <= 32'b0;
+                    data <= 32'b0;
                     state <= IDLE;
                 end
             end
@@ -81,17 +83,16 @@ module rx_fsm #(
         end
     end
 
-    fifo_async_8bit tx_fifo_inst (
+    fifo_async_8bit rx_fifo_inst (
         // 写入fifo:
         .wrclk (clk_wr),
 	    .wrreq (rx_data_en),
 	    .data (rx_data),
+        .wrfull (wr_full),
         // 读取fifo:
 	    .rdclk (clk_rd),
 	    .rdreq (rd_req),
-	    .q (rd_data),
-        // fifo状态:
-        .wrfull (wr_full)
+	    .q (rd_data)
 	);
 
     uart_rx #(
