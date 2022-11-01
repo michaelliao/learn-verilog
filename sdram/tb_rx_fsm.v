@@ -31,9 +31,9 @@ module tb_rx_fsm();
 
     reg in_rx_data;
     reg in_op_ack;
-    wire out_op;
-    wire out_address;
-    wire out_data;
+    wire [7:0] out_op;
+    wire [31:0] out_address;
+    wire [31:0] out_data;
 
     rx_fsm #(
         .BAUD (5_000_000) // 波特率是时钟频率的1/10
@@ -50,33 +50,41 @@ module tb_rx_fsm();
         .data (out_data)
     );
 
-    reg [63:0] in_data;
-    reg [7:0] one_byte;
-
     initial begin
-        in_rx_data = 1'b1;
-        in_op_ack = 1'b0;
-        // 输入数据: 0xfea1b2c3_6c7d8e9c
-        in_data = 64'hfea1b2c3_6c7d8e9c;
-        #55;
-        repeat (8) begin
-            one_byte = in_data[63:56];
-            in_data = in_data << 8;
-            in_rx_data = 1'b0; // leading bit 0
-            #200;
-            repeat (8) begin
-                in_rx_data = one_byte[0];
-                one_byte = one_byte >> 1;
-                #200;
-            end
-            in_rx_data = 1'b1; // end bit 1
-            #200;
-        end
-        #300;
-        in_op_ack = 1'b1;
-        #100;
+        rx_task(64'hfea1b2c3_6c7d8e9c);
+        rx_task(64'hfdc9b8a7_10244096);
+        rx_task(64'hfc123456_abcd0123); // bad op = fc
+        #10000;
         $finish;
     end
+
+    task rx_task;
+        input reg [63:0] rx_task_data;
+        reg [7:0] one_byte;
+        begin
+            in_rx_data = 1'b1;
+            in_op_ack = 1'b0;
+            #55;
+            repeat (8) begin
+                one_byte = rx_task_data[63:56];
+                rx_task_data = rx_task_data << 8;
+                in_rx_data = 1'b0; // leading bit 0
+                #200;
+                repeat (8) begin
+                    in_rx_data = one_byte[0];
+                    one_byte = one_byte >> 1;
+                    #200;
+                end
+                in_rx_data = 1'b1; // end bit 1
+                #200;
+            end
+            #300;
+            in_op_ack = 1'b1;
+            #40;
+            in_op_ack = 1'b0;
+            #100;
+        end
+    endtask
 
     initial begin
         $dumpfile("tb_rx_fsm.vcd");
