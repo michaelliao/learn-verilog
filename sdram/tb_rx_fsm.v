@@ -58,7 +58,7 @@ module tb_rx_fsm();
         in_op_ack = 1'b0;
         // 输入数据: 0xfea1b2c3_6c7d8e9c
         in_data = 64'hfea1b2c3_6c7d8e9c;
-        #55
+        #55;
         repeat (8) begin
             rx_byte = in_data[63:56];
             in_data = in_data << 8;
@@ -69,21 +69,18 @@ module tb_rx_fsm();
                 rx_byte = rx_byte >> 1;
                 #200;
             end
-            in_rx_data = 1'b0; // parity bit
-            #200;
             in_rx_data = 1'b1; // end bit 1
             #200;
         end
         #300;
         in_op_ack = 1'b1;
         #100;
+        $finish;
     end
 
     initial begin
         $dumpfile("tb_rx_fsm.vcd");
         $dumpvars(0, component);
-        #300000
-        $finish;
     end
 
 endmodule
