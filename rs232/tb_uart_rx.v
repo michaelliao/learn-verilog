@@ -20,6 +20,8 @@ module tb_uart_rx ();
         .out_en (out_en)
     );
 
+    reg [7:0] one_byte;
+
     initial begin
         clk = 1'b1;
         rst_n = 1'b0;
@@ -27,60 +29,59 @@ module tb_uart_rx ();
         #10
         rst_n = 1'b1;
         #20
+        // receive 01010101:
+        one_byte = 8'b01010101;
         // start 0:
         in_data = 1'b0;
         #40
-        // 01010101:
-        in_data = 1'b1;
-        #40
-        in_data = 1'b0;
-        #40
-        in_data = 1'b1;
-        #40
-        in_data = 1'b0;
-        #40
-        in_data = 1'b1;
-        #40
-        in_data = 1'b0;
-        #40
-        in_data = 1'b1;
-        #40
-        in_data = 1'b0;
-        #40
-        // parity:
-        in_data = 1'b1;
-        #40
+        repeat (8) begin
+            in_data = one_byte[0];
+            one_byte = one_byte >> 1;
+            #40;
+        end
         // end 1:
         in_data = 1'b1;
-        #40
-        // next byte:
+        #40;
+        // receive: 10111100:
+        one_byte = 8'b10111100;
         // start 0:
         in_data = 1'b0;
-        #40
-        // 10111100:
-        in_data = 1'b0;
-        #40
-        in_data = 1'b0;
-        #40
-        in_data = 1'b1;
-        #40
-        in_data = 1'b1;
-        #40
-        in_data = 1'b1;
-        #40
-        in_data = 1'b1;
-        #40
-        in_data = 1'b0;
-        #40
-        in_data = 1'b1;
-        #40
-        // parity:
-        in_data = 1'b0;
-        #40
+        #40;
+        repeat (8) begin
+            in_data = one_byte[0];
+            one_byte = one_byte >> 1;
+            #40;
+        end
         // end 1:
         in_data = 1'b1;
-        #40
-        #100
+        #40;
+        // receive: 00010000:
+        one_byte = 8'b00010000;
+        // start 0:
+        in_data = 1'b0;
+        #40;
+        repeat (8) begin
+            in_data = one_byte[0];
+            one_byte = one_byte >> 1;
+            #40;
+        end
+        // end 1:
+        in_data = 1'b1;
+        #40;
+        // receive: 11101111:
+        one_byte = 8'b11101111;
+        // start 0:
+        in_data = 1'b0;
+        #40;
+        repeat (8) begin
+            in_data = one_byte[0];
+            one_byte = one_byte >> 1;
+            #40;
+        end
+        // end 1:
+        in_data = 1'b1;
+        #40;
+        #100;
         $finish;
     end
 

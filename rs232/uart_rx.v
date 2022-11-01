@@ -1,15 +1,15 @@
 /******************************************************************************
 
-串口接收数据 (带奇偶校验)
+串口接收数据 (8bit, 不带奇偶校验, 停止位1)
 
 Baud = 9600, 14400, 19200, 38400, 57600, 115200
 
 计数器采样点: 在上下沿的中点采样
 
-   │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │
-   ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼
-───┐  0  ┌─────┐  0     0  ┌─────┐  0  ┌─────┐  0  ┌─────┐  0  ┌────
-   └─────┘  1  └───────────┘  1  └─────┘  1  └─────┘  1  └─────┘  1
+   │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │
+   ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼
+───┐  0  ┌─────┐  0     0  ┌─────┐  0  ┌───────────┐  0  ┌─────
+   └─────┘  1  └───────────┘  1  └─────┘  1     1  └─────┘  1
 
 ******************************************************************************/
 
@@ -22,7 +22,6 @@ module uart_rx #(
     input rst_n,
     input in_data, // 输入串口数据
     output [7:0] out_data, // 输出接收数据
-    output out_parity, // 输出奇偶效验
     output reg out_en // 输出=1有效
 );
 
@@ -41,11 +40,9 @@ module uart_rx #(
     reg [WIDTH-1:0] cnt;
     reg [4:0] bps_cnt; // count for 0, 1, 2, ..., 15, 16, 17
     reg [7:0] data;
-    reg parity;
     reg [2:0] rx_detect; // 延迟两拍采样
 
     assign out_data = out_en == 1'b1 ? data : 8'd0;
-    assign out_parity = out_en == 1'b1 ? parity : 1'b0;
 
     always @ (posedge clk) begin
         rx_detect[0] <= in_data;
@@ -59,12 +56,10 @@ module uart_rx #(
             cnt <= CNT_0;
             bps_cnt <= 5'd0;
             data <= 8'd0;
-            parity <= 1'b0;
             out_en <= 1'b0;
         end else begin
             if (status == IDLE) begin
                 data <= 8'd0;
-                parity <= 1'b0;
                 out_en <= 1'b0;
                 cnt <= CNT_0;
                 if (rx_detect[2:1] == 2'b10) begin
@@ -84,29 +79,16 @@ module uart_rx #(
                         5'd1: begin
                             // start 0 sample point:
                             bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            out_en <= 1'b0;
                         end
-                        5'd2, 5'd4, 5'd6, 5'd8, 5'd10, 5'd12, 5'd14, 5'd16, 5'd18, 5'd20: begin
+                        5'd2, 5'd4, 5'd6, 5'd8, 5'd10, 5'd12, 5'd14, 5'd16, 5'd18: begin
                             // ignore sampling near at edge:
                             bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            out_en <= 1'b0;
                         end
                         5'd3, 5'd5, 5'd7, 5'd9, 5'd11, 5'd13, 5'd15, 5'd17: begin
                             bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
                             data <= { rx_detect[2], data[7:1] };
-                            out_en <= 1'b0;
                         end
                         5'd19: begin
-                            // parity sample point:
-                            bps_cnt <= bps_cnt + 1'b1;
-                            status <= RECEIVING;
-                            parity <= rx_detect[2];
-                            out_en <= 1'b0;
-                        end
-                        5'd21: begin
                             // end 1 sample point:
                             bps_cnt <= 5'd0;
                             status <= IDLE;
@@ -116,16 +98,12 @@ module uart_rx #(
                         default: begin
                             bps_cnt <= 1'b0;
                             status <= IDLE;
-                            data <= 8'd0;
-                            out_en <= 1'b0;
                         end
                     endcase
                 end else begin
                     cnt <= cnt + 1;
                     bps_cnt <= bps_cnt;
                     status <= RECEIVING;
-                    data <= data;
-                    out_en <= 1'b0;
                 end
             end
         end

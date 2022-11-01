@@ -27,21 +27,33 @@ module tb_uart_tx ();
         rst_n = 1'b0;
         in_en = 1'b0;
         in_data = 8'b0;
-        #10
+        #10;
         rst_n = 1'b1;
-        #10
+        #10;
         in_en = 1'b1;
         in_data = 8'b0011_0001;
-        #2
+        #2;
         in_en = 1'b0;
         in_data = 8'b0;
-        #250
+        #250;
         in_en = 1'b1;
         in_data = 8'b1001_0101;
-        #2
+        #2;
         in_en = 1'b0;
         in_data = 8'b0;
-        #250
+        #250;
+        in_en = 1'b1;
+        in_data = 8'b0001_0000;
+        #2;
+        in_en = 1'b0;
+        in_data = 8'b0;
+        #250;
+        in_en = 1'b1;
+        in_data = 8'b1110_1111;
+        #2;
+        in_en = 1'b0;
+        in_data = 8'b0;
+        #250;
         $finish;
     end
 
