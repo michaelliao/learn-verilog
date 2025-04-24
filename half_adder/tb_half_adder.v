@@ -4,28 +4,46 @@ module tb_half_adder ();
 
     reg a;
     reg b;
-    wire cout;
+    wire carry;
     wire sum;
 
     half_adder half_adder_instance(
         .a(a),
         .b(b),
-        .cout(cout),
+        .carry(carry),
         .sum(sum)
     );
+
+    task assert(input a, b, carry, sum);
+        begin
+            $display("Assert: a = %b, b = %b, carry = %b, sum = %b", a, b, carry, sum);
+            if ({1'b0, a} + {1'b0, b} !== {carry, sum}) begin
+                $display("Assert failed!");
+                $stop;
+            end
+        end
+    endtask
 
     initial begin
         a = 1'b0;
         b = 1'b0;
         #10
+        assert(a, b, carry, sum);
+        #10
         a = 1'b1;
         b = 1'b0;
+        #10
+        assert(a, b, carry, sum);
         #10
         a = 1'b0;
         b = 1'b1;
         #10
+        assert(a, b, carry, sum);
+        #10
         a = 1'b1;
         b = 1'b1;
+        #10
+        assert(a, b, carry, sum);
         #10
         a = 1'b0;
         b = 1'b0;
