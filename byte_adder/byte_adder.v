@@ -1,9 +1,10 @@
+`include "full_adder.v"
 
-module byte_adder(
+module byte_adder (
     input [7:0] a,
     input [7:0] b,
     input cin,
-    output cout,
+    output carry,
     output [7:0] sum
 );
 
@@ -19,7 +20,7 @@ module byte_adder(
         .a(a[0]),
         .b(b[0]),
         .cin(cin),
-        .cout(c1),
+        .carry(c1),
         .sum(sum[0])
     );
 
@@ -27,7 +28,7 @@ module byte_adder(
         .a(a[1]),
         .b(b[1]),
         .cin(c1),
-        .cout(c2),
+        .carry(c2),
         .sum(sum[1])
     );
 
@@ -35,7 +36,7 @@ module byte_adder(
         .a(a[2]),
         .b(b[2]),
         .cin(c2),
-        .cout(c3),
+        .carry(c3),
         .sum(sum[2])
     );
 
@@ -43,7 +44,7 @@ module byte_adder(
         .a(a[3]),
         .b(b[3]),
         .cin(c3),
-        .cout(c4),
+        .carry(c4),
         .sum(sum[3])
     );
 
@@ -51,7 +52,7 @@ module byte_adder(
         .a(a[4]),
         .b(b[4]),
         .cin(c4),
-        .cout(c5),
+        .carry(c5),
         .sum(sum[4])
     );
 
@@ -59,7 +60,7 @@ module byte_adder(
         .a(a[5]),
         .b(b[5]),
         .cin(c5),
-        .cout(c6),
+        .carry(c6),
         .sum(sum[5])
     );
 
@@ -67,7 +68,7 @@ module byte_adder(
         .a(a[6]),
         .b(b[6]),
         .cin(c6),
-        .cout(c7),
+        .carry(c7),
         .sum(sum[6])
     );
 
@@ -75,7 +76,7 @@ module byte_adder(
         .a(a[7]),
         .b(b[7]),
         .cin(c7),
-        .cout(cout),
+        .carry(carry),
         .sum(sum[7])
     );
 

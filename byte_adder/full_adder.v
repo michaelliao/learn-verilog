@@ -1,30 +1,31 @@
+`include "half_adder.v"
 
 module full_adder(
     input a,
     input b,
     input cin,
-    output cout,
+    output carry,
     output sum
 );
 
-    wire t_cout1;
-    wire t_cout2;
+    wire t_carry1;
+    wire t_carry2;
     wire t_sum;
 
     half_adder h1(
         .a(a),
         .b(b),
-        .cout(t_cout1),
+        .carry(t_carry1),
         .sum(t_sum)
     );
 
     half_adder h2(
         .a(t_sum),
         .b(cin),
-        .cout(t_cout2),
+        .carry(t_carry2),
         .sum(sum)
     );
 
-    assign cout = t_cout1 | t_cout2;
+    assign carry = t_carry1 | t_carry2;
 
 endmodule

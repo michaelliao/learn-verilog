@@ -1,6 +1,6 @@
 `timescale 1ns/1ns
 
-module tb_half_adder ();
+module half_adder_tb ();
 
     reg a;
     reg b;
@@ -52,7 +52,7 @@ module tb_half_adder ();
     end
 
     initial begin
-        $dumpfile("tb_half_adder.vcd");
+        $dumpfile("test.vcd");
         $dumpvars(0, half_adder_instance);
     end
 
