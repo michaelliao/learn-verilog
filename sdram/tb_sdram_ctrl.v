@@ -100,6 +100,7 @@ module tb_sdram_ctrl();
     )
     component (
         .clk (clk_100m),
+        .clk_for_sdr (clk_100m_shift),
         .rst_n (rst_n),
 
         // connect in top:
